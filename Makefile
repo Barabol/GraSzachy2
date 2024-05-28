@@ -8,3 +8,6 @@ run:
 runz:
 	clear
 	./a.out
+debug:
+	g++ -g ./main.cpp ./src/lib/*.cpp ./src/lib/*.hpp
+	gdb ./a.out

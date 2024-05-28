@@ -10,4 +10,6 @@ int main() {
   b.set(4, 5);
   b ^= a;
   b.print();
+  board main;
+  main.print();
 }
