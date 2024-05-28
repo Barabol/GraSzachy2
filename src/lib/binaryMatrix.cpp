@@ -1,6 +1,7 @@
 #include "binaryMatrix.hpp"
 #include <stdio.h>
 Matrix::Matrix() { this->clear(); }
+Matrix::~Matrix() {}
 void Matrix::set(unsigned const char x, unsigned const char y) {
   this->mx[x] |= (1 << y);
 }
@@ -69,8 +70,27 @@ void Matrix::print() {
   puts(" -----------------");
   for (int x = 0; x < 8; x++) {
     printf("| ");
-    for (int y = 0; y < 8; y++)
-      printf("%d ", this->value(x, y));
+    for (int y = 0; y < 8; y++) {
+      if (this->value(x, y))
+        printf("\033[1;31m1 \033[0m");
+      else
+        printf("\033[1;34m0 \033[0m");
+    }
+    printf("|\n");
+  }
+  puts(" -----------------");
+}
+void Matrix::print(char text[]) {
+  printf("|\033[1;5;36m%s\033[0m|\n", text);
+  puts(" -----------------");
+  for (int x = 0; x < 8; x++) {
+    printf("| ");
+    for (int y = 0; y < 8; y++) {
+      if (this->value(x, y))
+        printf("\033[1;31m1 \033[0m");
+      else
+        printf("\033[1;34m0 \033[0m");
+    }
     printf("|\n");
   }
   puts(" -----------------");
