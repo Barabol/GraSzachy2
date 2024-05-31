@@ -1,11 +1,11 @@
 #include "board.hpp"
 #ifndef __timer__
 #define __timer__
-class timer {
+class Timer {
 public:
-  timer(board brd, unsigned int time_);
+  Timer(board *brd, unsigned int time_);
   bool operator--();
-  ~timer();
+  ~Timer();
   void setto(unsigned int time_);
 
 private:

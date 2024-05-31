@@ -35,7 +35,7 @@ public:
   void operator=(board b);
   void clear();
   void print();
-  void flag(unsigned char x, unsigned char y);
+  bool flag(unsigned char x, unsigned char y);
   void flagAll(unsigned char color);
   void flagAll();
 

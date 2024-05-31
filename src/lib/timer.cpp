@@ -1,10 +1,10 @@
 #include "timer.hpp"
-timer::timer(board brd, unsigned int time_) {
-  this->playing = &(brd.playing);
+Timer::Timer(board *brd, unsigned int time_) {
+  this->playing = &(brd->playing);
   this->setto(time_);
 }
-timer::~timer() {}
-bool timer::operator--() {
+Timer::~Timer() {}
+bool Timer::operator--() {
   if (*this->playing) {
     if (this->times[1])
       this->times[1]--;
@@ -18,7 +18,7 @@ bool timer::operator--() {
   }
   return false;
 }
-void timer::setto(unsigned int time_) {
+void Timer::setto(unsigned int time_) {
   this->times[0] = time_;
   this->times[0] = time_;
 }
