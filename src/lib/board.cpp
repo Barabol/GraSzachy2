@@ -7,8 +7,28 @@ board::~board() {
       if (this->layout[x][y])
         this->layout[x][y]->~piece();
 }
+char piece::value() {
+  switch (this->typ) {
+  case PAWN:
+    return 1;
+  case KNIGHT:
+    return 3;
+  case BISHOP:
+    return 3;
+  case ROOK:
+    return 4;
+  case QUEEN:
+    return 9;
+  case KING:
+    return 10;
+  }
+  return 0;
+}
+void board::switchPlayer() { this->playing = (~this->playing) & 1; }
 void board::operator=(board b) {}
 void board::clear() {
+  this->points[0] = 0;
+  this->points[1] = 0;
   this->playing = WHITE;
   for (int x = 0; x < 4; x++) {
     this->flags[0][x].clear();

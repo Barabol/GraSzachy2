@@ -7,6 +7,7 @@ public:
   bool operator--();
   ~Timer();
   void setto(unsigned int time_);
+  unsigned int operator[](char a);
 
 private:
   unsigned int times[2];

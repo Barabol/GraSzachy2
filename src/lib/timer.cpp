@@ -4,6 +4,12 @@ Timer::Timer(board *brd, unsigned int time_) {
   this->setto(time_);
 }
 Timer::~Timer() {}
+unsigned int Timer::operator[](char a) {
+  if (a)
+    return this->times[0];
+  else
+    return this->times[1];
+}
 bool Timer::operator--() {
   if (*this->playing) {
     if (this->times[1])
@@ -20,5 +26,5 @@ bool Timer::operator--() {
 }
 void Timer::setto(unsigned int time_) {
   this->times[0] = time_;
-  this->times[0] = time_;
+  this->times[1] = time_;
 }

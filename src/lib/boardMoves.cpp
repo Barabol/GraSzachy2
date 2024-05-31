@@ -15,10 +15,14 @@ void board::_f_move(unsigned char x, unsigned char y) {
   switch (used->typ) {
   case PAWN:
     if (used->color == WHITE) {
+      if (this->chk_layout(x, y - 1, false))
+        break;
       this->flags[used->color][MOVE].set(x, y - 1);
       if (y == 6 && !this->layout[x][y - 2])
         this->flags[used->color][MOVE].set(x, y - 2);
     } else {
+      if (this->chk_layout(x, y + 1, false))
+        break;
       this->flags[used->color][MOVE].set(x, y + 1);
       if (y == 1 && !this->layout[x][y + 2])
         this->flags[used->color][MOVE].set(x, y + 2);
@@ -182,6 +186,18 @@ void board::_f_attack(unsigned char x, unsigned char y) {
   const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
   switch (used->typ) {
   case PAWN:
+    if (used->color == WHITE) {
+      if (this->chk_layout(x + 1, y - 1, false))
+        this->flags[used->color][ATTACK].set(x + 1, y - 1);
+      if (this->chk_layout(x - 1, y - 1, false))
+        this->flags[used->color][ATTACK].set(x - 1, y - 1);
+
+    } else {
+      if (this->chk_layout(x + 1, y + 1, false))
+        this->flags[used->color][ATTACK].set(x + 1, y + 1);
+      if (this->chk_layout(x - 1, y + 1, false))
+        this->flags[used->color][ATTACK].set(x - 1, y + 1);
+    }
     break;
   case KNIGHT:
     for (int z = 0; z < 4; z++) {

@@ -39,7 +39,7 @@ void render(ALLEGRO_BITMAP *bitMap[3][6], board *brd, selection *selected) {
       }
       if (selected->x == x && selected->y == y)
         al_draw_bitmap(bitMap[2][1], TILE_SIZE * x, TILE_SIZE * y, 0);
-      if (selected->moves.value(y, x))
+      if (selected->moves.value(x, y))
         al_draw_bitmap(bitMap[2][0], TILE_SIZE * x, TILE_SIZE * y, 0);
     }
   al_flip_display();
@@ -78,6 +78,7 @@ int main() {
 
   bool active = 1;
   char x, y;
+  char timerdec = FRAMES;
 
   selection selected;
   board *mainboard = new board;
@@ -89,8 +90,21 @@ int main() {
     al_wait_for_event(queue, &event);
     switch (event.type) {
     case ALLEGRO_EVENT_TIMER:
-      // al_clear_to_color(al_map_rgb(0, 255, 0));
-      al_draw_text(font, al_map_rgb(0, 255, 0), 0, 0, 0, "abdc");
+      al_clear_to_color(al_map_rgb(0, 0, 0));
+      if (timerdec)
+        timerdec--;
+      else {
+        timerdec = FRAMES;
+        --maintimer;
+      }
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 30, 0, "Czas: %d",
+                    maintimer[0]);
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 570, 0, "Punkty: %d",
+                    mainboard->points[WHITE]);
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 90, 0, "Punkty: %d",
+                    mainboard->points[BLACK]);
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 640, 0, "Czas: %d",
+                    maintimer[1]);
       render(textures, mainboard, &selected);
       break;
     case 10:
@@ -99,6 +113,7 @@ int main() {
         active = 0;
         break;
       case 18:
+        mainboard->switchPlayer();
         // board.clear(1200);
         break;
       default:
@@ -110,10 +125,8 @@ int main() {
     case 21: // click
       x = (int)(event.mouse.x / TILE_SIZE);
       y = (int)(event.mouse.y / TILE_SIZE);
-
-      printf("%d,%d\n", x, y);
-
-      if (mainboard->flag(x, y) && mainboard->layout[x][y]) {
+      if (mainboard->flag(x, y) && mainboard->layout[x][y] &&
+          mainboard->layout[x][y]->color == mainboard->playing) {
         mainboard->print();
         selected.moves.clear();
         selected.moves =
@@ -122,8 +135,14 @@ int main() {
         selected.x = x;
         selected.y = y;
         selected.used = mainboard->layout[x][y];
-      } else
+      } else if (selected.moves.value(x, y)) {
+        mainboard->move(selected.x, selected.y, x, y);
         selected.x = -1;
+        selected.moves.clear();
+      } else {
+        selected.x = -1;
+        selected.moves.clear();
+      }
       selected.moves.print();
       break;
     case 42:
@@ -135,6 +154,8 @@ int main() {
     }
     // selected.moves.print();
   }
+  mainboard->~board();
+  maintimer.~Timer();
   al_uninstall_audio();
   al_uninstall_mouse();
   al_uninstall_keyboard();

@@ -14,7 +14,7 @@ void Matrix::set(unsigned const char x, unsigned const char y,
     this->mx[x] &= (~(1 << y));
 }
 bool Matrix::value(unsigned const char x, unsigned const char y) {
-  return (bool)(this->mx[x] & (1 << y));
+  return (bool)(this->mx[y] & (1 << x));
 }
 unsigned char Matrix::allValues() {
   unsigned char a = 0;
@@ -73,7 +73,7 @@ void Matrix::print() {
   for (int x = 0; x < 8; x++) {
     printf("| ");
     for (int y = 0; y < 8; y++) {
-      if (this->value(x, y))
+      if (this->value(y, x))
         printf("\033[1;31m1 \033[0m");
       else
         printf("\033[1;34m0 \033[0m");
@@ -88,7 +88,7 @@ void Matrix::print(char text[]) {
   for (int x = 0; x < 8; x++) {
     printf("| ");
     for (int y = 0; y < 8; y++) {
-      if (this->value(x, y))
+      if (this->value(y, x))
         printf("\033[1;31m1 \033[0m");
       else
         printf("\033[1;34m0 \033[0m");

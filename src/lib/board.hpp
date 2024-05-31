@@ -21,6 +21,7 @@ public:
   piece(char kolor, char typ);
   ~piece();
   char symbol();
+  char value();
 
 private:
 };
@@ -30,6 +31,7 @@ public:
   Matrix flags[2][4];
   piece *layout[8][8];
   bool playing;
+  char points[2];
   board();
   ~board();
   void operator=(board b);
@@ -38,6 +40,8 @@ public:
   bool flag(unsigned char x, unsigned char y);
   void flagAll(unsigned char color);
   void flagAll();
+  void switchPlayer();
+  void move(char px, char py, char x, char y);
 
 private:
   void flag_(unsigned char x, unsigned char y);
