@@ -274,6 +274,20 @@ void board::_f_placed(unsigned char x, unsigned char y) {
   this->flags[this->layout[x][y]->color][PLACED].set(x, y);
 }
 void board::flag(unsigned char x, unsigned char y) {
+  if (!this->layout[x][y])
+    return;
+  for (int z = 0; z < 4; z++)
+    this->flags[this->layout[x][y]->color][z].clear();
+  if (x > 7 || y > 7)
+    return;
+  if (this->layout[x][y]) {
+    _f_placed(x, y);
+    _f_attack(x, y);
+    _f_move(x, y);
+    _f_guard(x, y);
+  }
+}
+void board::flag_(unsigned char x, unsigned char y) {
   if (x > 7 || y > 7)
     return;
   if (this->layout[x][y]) {
@@ -289,6 +303,17 @@ void board::flagAll(unsigned char color) {
   for (int y = 0; y < 8; y++)
     for (int x = 0; x < 8; x++) {
       if (this->layout[x][y] && this->layout[x][y]->color == color)
-        flag(x, y);
+        flag_(x, y);
+    }
+}
+void board::flagAll() {
+  for (int x = 0; x < 4; x++) {
+    this->flags[WHITE][x].clear();
+    this->flags[BLACK][x].clear();
+  }
+  for (int y = 0; y < 8; y++)
+    for (int x = 0; x < 8; x++) {
+      if (this->layout[x][y])
+        flag_(x, y);
     }
 }

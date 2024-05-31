@@ -37,8 +37,10 @@ public:
   void print();
   void flag(unsigned char x, unsigned char y);
   void flagAll(unsigned char color);
+  void flagAll();
 
 private:
+  void flag_(unsigned char x, unsigned char y);
   void _f_guard(unsigned char x, unsigned char y);
   void _f_move(unsigned char x, unsigned char y);
   void _f_placed(unsigned char x, unsigned char y);

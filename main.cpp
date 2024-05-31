@@ -10,5 +10,8 @@ int main() {
   main.flags[WHITE][ATTACK].print("białe");
   main.flags[BLACK][MOVE].print("czarne");
   main.flags[WHITE][PLACED].print();
-  (main.flags[WHITE][ATTACK] | main.flags[WHITE][PLACED]).print();
+  main.flag(3, 3);
+  (main.flags[WHITE][ATTACK] | main.flags[WHITE][PLACED] |
+   main.flags[WHITE][GUARD])
+      .print();
 }
