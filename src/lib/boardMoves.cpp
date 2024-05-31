@@ -36,11 +36,49 @@ void board::_f_move(unsigned char x, unsigned char y) {
     break;
   case QUEEN:
   case BISHOP:
-
+    for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
+      if (chk_layout(z, v, false))
+        break;
+      this->flags[used->color][MOVE].set(z, v);
+    }
+    for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
+      if (chk_layout(z, v, false))
+        break;
+      this->flags[used->color][MOVE].set(z, v);
+    }
+    for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
+      if (chk_layout(z, v, false))
+        break;
+      this->flags[used->color][MOVE].set(z, v);
+    }
+    for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
+      if (chk_layout(z, v, false))
+        break;
+      this->flags[used->color][MOVE].set(z, v);
+    }
     if (used->typ == BISHOP)
       break;
   case ROOK:
-
+    for (int z = x + 1; z < 8; z++) {
+      if (chk_layout(z, y, false))
+        break;
+      this->flags[used->color][MOVE].set(z, y);
+    }
+    for (int z = y + 1; z < 8; z++) {
+      if (chk_layout(x, z, false))
+        break;
+      this->flags[used->color][MOVE].set(x, z);
+    }
+    for (int z = x - 1; z > -1; z--) {
+      if (chk_layout(z, y, false))
+        break;
+      this->flags[used->color][MOVE].set(z, y);
+    }
+    for (int z = y - 1; z > -1; z--) {
+      if (chk_layout(x, z, false))
+        break;
+      this->flags[used->color][MOVE].set(x, z);
+    }
     break;
   case KING:
 
@@ -69,11 +107,70 @@ void board::_f_guard(unsigned char x, unsigned char y) {
     break;
   case QUEEN:
   case BISHOP:
+    for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color == used->color)
+          this->flags[used->color][GUARD].set(z, v);
+        break;
+      }
+    }
+    for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color == used->color)
+          this->flags[used->color][GUARD].set(z, v);
+        break;
+      }
+    }
+    for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color == used->color)
+          this->flags[used->color][GUARD].set(z, v);
+        break;
+      }
+    }
+    for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color == used->color)
+          this->flags[used->color][GUARD].set(z, v);
+        break;
+      }
+    }
 
     if (used->typ == BISHOP)
       break;
   case ROOK:
-
+    for (int z = x + 1; z < 8; z++) {
+      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color)
+        break;
+      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color) {
+        this->flags[used->color][GUARD].set(z, y);
+        break;
+      }
+    }
+    for (int z = x - 1; z > -1; z--) {
+      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color)
+        break;
+      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color) {
+        this->flags[used->color][GUARD].set(z, y);
+        break;
+      }
+    }
+    for (int z = y + 1; z < 8; z++) {
+      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color)
+        break;
+      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color) {
+        this->flags[used->color][GUARD].set(x, z);
+        break;
+      }
+    }
+    for (int z = y - 1; z > -1; z--) {
+      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color)
+        break;
+      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color) {
+        this->flags[used->color][GUARD].set(x, z);
+        break;
+      }
+    }
     break;
   case KING:
 
@@ -102,9 +199,70 @@ void board::_f_attack(unsigned char x, unsigned char y) {
     break;
   case QUEEN:
   case BISHOP:
+    for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color != used->color)
+          this->flags[used->color][ATTACK].set(z, v);
+        break;
+      }
+    }
+    for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color != used->color)
+          this->flags[used->color][ATTACK].set(z, v);
+        break;
+      }
+    }
+    for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color != used->color)
+          this->flags[used->color][ATTACK].set(z, v);
+        break;
+      }
+    }
+    for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
+      if (chk_layout(z, v, false)) {
+        if (this->layout[z][v]->color != used->color)
+          this->flags[used->color][ATTACK].set(z, v);
+        break;
+      }
+    }
+
     if (used->typ == BISHOP)
       break;
   case ROOK:
+    for (int z = x + 1; z < 8; z++) {
+      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color)
+        break;
+      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color) {
+        this->flags[used->color][ATTACK].set(z, y);
+        break;
+      }
+    }
+    for (int z = x - 1; z > -1; z--) {
+      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color)
+        break;
+      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color) {
+        this->flags[used->color][ATTACK].set(z, y);
+        break;
+      }
+    }
+    for (int z = y + 1; z < 8; z++) {
+      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color)
+        break;
+      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color) {
+        this->flags[used->color][ATTACK].set(x, z);
+        break;
+      }
+    }
+    for (int z = y - 1; z > -1; z--) {
+      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color)
+        break;
+      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color) {
+        this->flags[used->color][ATTACK].set(x, z);
+        break;
+      }
+    }
 
     break;
   case KING:
