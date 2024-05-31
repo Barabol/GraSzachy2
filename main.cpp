@@ -127,6 +127,8 @@ int main() {
       y = (int)(event.mouse.y / TILE_SIZE);
       if (mainboard->flag(x, y) && mainboard->layout[x][y] &&
           mainboard->layout[x][y]->color == mainboard->playing) {
+        if (mainboard->layout[x][y]->typ == KING)
+          mainboard->kinglogic(x, y);
         mainboard->print();
         selected.moves.clear();
         selected.moves =

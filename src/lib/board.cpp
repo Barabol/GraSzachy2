@@ -30,6 +30,10 @@ void board::clear() {
   this->points[0] = 0;
   this->points[1] = 0;
   this->playing = WHITE;
+  this->kings[WHITE][0] = 4;
+  this->kings[WHITE][1] = 7;
+  this->kings[BLACK][0] = 4;
+  this->kings[BLACK][1] = 0;
   for (int x = 0; x < 4; x++) {
     this->flags[0][x].clear();
     this->flags[1][x].clear();
@@ -49,7 +53,7 @@ void board::clear() {
     this->layout[x][4] = nullptr;
     this->layout[x][5] = nullptr;
     this->layout[x][6] = new piece(WHITE, PAWN);
-    this->layout[x][7] = new piece(WHITE, content[7 - x]);
+    this->layout[x][7] = new piece(WHITE, content[x]);
   }
 }
 void board::print() {
@@ -67,7 +71,6 @@ void board::print() {
   for (int y = 0; y < 8; y++) {
     printf("\x1b[44;1;31m %c \x1b[0m", '8' - y);
     for (int x = 0; x < 8; x++) {
-
       if (this->layout[x][y] != nullptr) {
         symbol = this->layout[x][y]->symbol();
         kolorek = this->layout[x][y]->color;

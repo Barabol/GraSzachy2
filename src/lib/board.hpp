@@ -32,6 +32,7 @@ public:
   piece *layout[8][8];
   bool playing;
   char points[2];
+  char kings[2][2];
   board();
   ~board();
   void operator=(board b);
@@ -42,8 +43,10 @@ public:
   void flagAll();
   void switchPlayer();
   void move(char px, char py, char x, char y);
+  void kinglogic(char x, char y);
 
 private:
+  void _f_Fking(unsigned char color);
   void flag_(unsigned char x, unsigned char y);
   void _f_guard(unsigned char x, unsigned char y);
   void _f_move(unsigned char x, unsigned char y);

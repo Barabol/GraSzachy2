@@ -84,7 +84,7 @@ void board::_f_move(unsigned char x, unsigned char y) {
       this->flags[used->color][MOVE].set(x, z);
     }
     break;
-  case KING:
+  case KING: // tu powinno być puste
 
     break;
   }
@@ -94,6 +94,18 @@ void board::_f_guard(unsigned char x, unsigned char y) {
   const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
   switch (used->typ) {
   case PAWN:
+    if (used->color == WHITE) {
+      if (this->chk_layout(x + 1, y - 1, false))
+        this->flags[used->color][GUARD].set(x + 1, y - 1);
+      if (this->chk_layout(x - 1, y - 1, false))
+        this->flags[used->color][GUARD].set(x - 1, y - 1);
+
+    } else {
+      if (this->chk_layout(x + 1, y + 1, false))
+        this->flags[used->color][GUARD].set(x + 1, y + 1);
+      if (this->chk_layout(x - 1, y + 1, false))
+        this->flags[used->color][GUARD].set(x - 1, y + 1);
+    }
     break;
   case KNIGHT:
     for (int z = 0; z < 4; z++) {
@@ -176,7 +188,7 @@ void board::_f_guard(unsigned char x, unsigned char y) {
       }
     }
     break;
-  case KING:
+  case KING: // to trzeba dodać
 
     break;
   }
@@ -281,7 +293,7 @@ void board::_f_attack(unsigned char x, unsigned char y) {
     }
 
     break;
-  case KING:
+  case KING: // to niby też
 
     break;
   }
