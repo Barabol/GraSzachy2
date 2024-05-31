@@ -12,8 +12,10 @@ board::~board() {
 void board::operator=(board b) {}
 void board::clear() {
   this->playing = WHITE;
-  this->flags[0].clear();
-  this->flags[1].clear();
+  for (int x = 0; x < 4; x++) {
+    this->flags[0][x].clear();
+    this->flags[1][x].clear();
+  }
   char content[8] = {ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK};
   for (int x = 0; x < 8; x++)
     for (int y = 0; y < 0; y++) {
@@ -83,21 +85,4 @@ char piece::symbol() {
     return 'K';
   }
   return '?';
-}
-// trzeba to zmienić bo tak będzie w chuj nie wygodnie )-:
-void board::_f_guard(char color) {}
-void board::_f_move(char color) {}
-void board::_f_attack(char color) {}
-void board::flag(int flagType, char color) {
-  switch (flagType) {
-  case MOVE:
-    _f_move(color);
-    break;
-  case ATTACK:
-    _f_attack(color);
-    break;
-  case GUARD:
-    _f_guard(color);
-    break;
-  }
 }

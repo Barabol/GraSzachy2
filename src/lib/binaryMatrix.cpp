@@ -3,7 +3,8 @@
 Matrix::Matrix() { this->clear(); }
 Matrix::~Matrix() {}
 void Matrix::set(unsigned const char x, unsigned const char y) {
-  this->mx[x] |= (1 << y);
+  if (x < 8 && y < 8)
+    this->mx[y] |= (1 << x);
 }
 void Matrix::set(unsigned const char x, unsigned const char y,
                  const bool value) {
@@ -18,7 +19,8 @@ bool Matrix::value(unsigned const char x, unsigned const char y) {
 unsigned char Matrix::allValues() {
   unsigned char a = 0;
   for (int x = 0; x < 8; x++)
-    a += this->mx[x];
+    for (int y = 0; y < 8; y++)
+      a += this->value(x, y);
   return a;
 }
 Matrix Matrix::operator&(const Matrix b) {
