@@ -3,11 +3,9 @@
 board::board() { this->clear(); }
 board::~board() {
   for (int x = 0; x < 8; x++)
-    for (int y = 0; y < 0; y++) {
+    for (int y = 0; y < 0; y++)
       if (this->layout[x][y])
         this->layout[x][y]->~piece();
-      this->layout[x][y] = nullptr;
-    }
 }
 void board::operator=(board b) {}
 void board::clear() {

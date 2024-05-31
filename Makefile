@@ -1,13 +1,13 @@
 build:
-	g++ ./main.cpp ./src/lib/*.cpp ./src/lib/*.hpp
+	g++ ./main.cpp ./src/lib/*.cpp ./src/lib/*.hpp -o szachy -lallegro_primitives -lallegro -lallegro_ttf -lallegro_font -lallegro_image -lallegro_audio -lallegro_acodec
 clear:
-	rm ./a.out
+	rm ./szachy
 	rm ./src/lib/*gch
 run:
-	./a.out
+	./szachy
 runz:
 	clear
-	./a.out
+	./szachy
 debug:
-	g++ -g ./main.cpp ./src/lib/*.cpp ./src/lib/*.hpp
-	gdb ./a.out
+	g++ -g ./main.cpp ./src/lib/*.cpp ./src/lib/*.hpp -o szachy -lallegro_primitives -lallegro -lallegro_ttf -lallegro_font -lallegro_image -lallegro_audio -lallegro_acodec
+	gdb ./szachy
