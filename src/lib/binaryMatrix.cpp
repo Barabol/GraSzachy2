@@ -82,7 +82,7 @@ void Matrix::print() {
   }
   puts(" -----------------");
 }
-void Matrix::print(char text[]) {
+void Matrix::print(const char text[]) {
   printf("|\033[1;5;36m%s\033[0m|\n", text);
   puts(" -----------------");
   for (int x = 0; x < 8; x++) {

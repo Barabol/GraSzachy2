@@ -17,10 +17,10 @@ public:
   void operator|=(const Matrix b);
   void setto(const bool value);
   void print();
-  void print(char text[]);
+  void print(const char text[]);
   void clear();
-  char mx[8];
 
 private:
+  char mx[8];
 };
 #endif

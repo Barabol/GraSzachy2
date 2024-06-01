@@ -18,7 +18,7 @@ public:
   char typ;
   char color;
   bool notMoved;
-  piece(char kolor, char typ);
+  piece(const char kolor, const char typ);
   ~piece();
   char symbol();
   char value();
@@ -35,23 +35,23 @@ public:
   char kings[2][2];
   board();
   ~board();
-  void operator=(board b);
+  void operator=(const board b);
   void clear();
   void print();
-  bool flag(unsigned char x, unsigned char y);
-  void flagAll(unsigned char color);
+  bool flag(const unsigned char x, const unsigned char y);
+  void flagAll(const unsigned char color);
   void flagAll();
   void switchPlayer();
-  void move(char px, char py, char x, char y);
-  void kinglogic(char x, char y);
+  void move(const char px, const char py, const char x, const char y);
+  void kinglogic(const char x, const char y);
 
 private:
-  void _f_Fking(unsigned char color);
-  void flag_(unsigned char x, unsigned char y);
-  void _f_guard(unsigned char x, unsigned char y);
-  void _f_move(unsigned char x, unsigned char y);
-  void _f_placed(unsigned char x, unsigned char y);
-  void _f_attack(unsigned char x, unsigned char y);
-  bool chk_layout(unsigned char x, unsigned char y, bool negated);
+  void _f_Fking(const unsigned char color);
+  void flag_(const unsigned char x, const unsigned char y);
+  void _f_guard(const unsigned char x, const unsigned char y);
+  void _f_move(const unsigned char x, const unsigned char y);
+  void _f_placed(const unsigned char x, const unsigned char y);
+  void _f_attack(const unsigned char x, const unsigned char y);
+  bool chk_layout(const unsigned char x, const unsigned char y);
 };
 #endif

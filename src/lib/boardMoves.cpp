@@ -1,27 +1,24 @@
 #include "board.hpp"
-bool board::chk_layout(unsigned char x, unsigned char y, bool negated) {
+bool board::chk_layout(const unsigned char x, const unsigned char y) {
   if (y > 7 || y < 0 || x > 7 || x < 0)
     return false;
-  if (this->layout[x][y]) {
-    if (negated)
-      return (bool)(!this->layout[x][y]);
+  if (this->layout[x][y])
     return (bool)(this->layout[x][y]);
-  }
   return false;
 }
-void board::_f_move(unsigned char x, unsigned char y) {
+void board::_f_move(const unsigned char x, const unsigned char y) {
   const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
   piece *used = this->layout[x][y];
   switch (used->typ) {
   case PAWN:
     if (used->color == WHITE) {
-      if (this->chk_layout(x, y - 1, false))
+      if (this->chk_layout(x, y - 1))
         break;
       this->flags[used->color][MOVE].set(x, y - 1);
       if (y == 6 && !this->layout[x][y - 2])
         this->flags[used->color][MOVE].set(x, y - 2);
     } else {
-      if (this->chk_layout(x, y + 1, false))
+      if (this->chk_layout(x, y + 1))
         break;
       this->flags[used->color][MOVE].set(x, y + 1);
       if (y == 1 && !this->layout[x][y + 2])
@@ -30,10 +27,10 @@ void board::_f_move(unsigned char x, unsigned char y) {
     break;
   case KNIGHT:
     for (int z = 0; z < 4; z++) {
-      if (!this->chk_layout(x + Kholder[z][0], y + Kholder[z][1], false))
+      if (!this->chk_layout(x + Kholder[z][0], y + Kholder[z][1]))
         this->flags[used->color][MOVE].set(x + Kholder[z][0],
                                            y + Kholder[z][1]);
-      if (!this->chk_layout(x + Kholder[z][1], y + Kholder[z][0], false))
+      if (!this->chk_layout(x + Kholder[z][1], y + Kholder[z][0]))
         this->flags[used->color][MOVE].set(x + Kholder[z][1],
                                            y + Kholder[z][0]);
     }
@@ -41,22 +38,22 @@ void board::_f_move(unsigned char x, unsigned char y) {
   case QUEEN:
   case BISHOP:
     for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
-      if (chk_layout(z, v, false))
+      if (chk_layout(z, v))
         break;
       this->flags[used->color][MOVE].set(z, v);
     }
     for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
-      if (chk_layout(z, v, false))
+      if (chk_layout(z, v))
         break;
       this->flags[used->color][MOVE].set(z, v);
     }
     for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
-      if (chk_layout(z, v, false))
+      if (chk_layout(z, v))
         break;
       this->flags[used->color][MOVE].set(z, v);
     }
     for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
-      if (chk_layout(z, v, false))
+      if (chk_layout(z, v))
         break;
       this->flags[used->color][MOVE].set(z, v);
     }
@@ -64,22 +61,22 @@ void board::_f_move(unsigned char x, unsigned char y) {
       break;
   case ROOK:
     for (int z = x + 1; z < 8; z++) {
-      if (chk_layout(z, y, false))
+      if (chk_layout(z, y))
         break;
       this->flags[used->color][MOVE].set(z, y);
     }
     for (int z = y + 1; z < 8; z++) {
-      if (chk_layout(x, z, false))
+      if (chk_layout(x, z))
         break;
       this->flags[used->color][MOVE].set(x, z);
     }
     for (int z = x - 1; z > -1; z--) {
-      if (chk_layout(z, y, false))
+      if (chk_layout(z, y))
         break;
       this->flags[used->color][MOVE].set(z, y);
     }
     for (int z = y - 1; z > -1; z--) {
-      if (chk_layout(x, z, false))
+      if (chk_layout(x, z))
         break;
       this->flags[used->color][MOVE].set(x, z);
     }
@@ -89,32 +86,36 @@ void board::_f_move(unsigned char x, unsigned char y) {
     break;
   }
 }
-void board::_f_guard(unsigned char x, unsigned char y) {
+void board::_f_guard(const unsigned char x, const unsigned char y) {
   piece *used = this->layout[x][y];
-  const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
+  static const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
   switch (used->typ) {
   case PAWN:
     if (used->color == WHITE) {
-      if (this->chk_layout(x + 1, y - 1, false))
+      if (this->chk_layout(x + 1, y - 1) &&
+          this->layout[x + 1][y - 1]->color == used->color)
         this->flags[used->color][GUARD].set(x + 1, y - 1);
-      if (this->chk_layout(x - 1, y - 1, false))
+      if (this->chk_layout(x - 1, y - 1) &&
+          this->layout[x - 1][y - 1]->color == used->color)
         this->flags[used->color][GUARD].set(x - 1, y - 1);
 
     } else {
-      if (this->chk_layout(x + 1, y + 1, false))
+      if (this->chk_layout(x + 1, y + 1) &&
+          this->layout[x + 1][y + 1]->color == used->color)
         this->flags[used->color][GUARD].set(x + 1, y + 1);
-      if (this->chk_layout(x - 1, y + 1, false))
+      if (this->chk_layout(x - 1, y + 1) &&
+          this->layout[x - 1][y + 1]->color == used->color)
         this->flags[used->color][GUARD].set(x - 1, y + 1);
     }
     break;
   case KNIGHT:
     for (int z = 0; z < 4; z++) {
-      if (this->chk_layout(x + Kholder[z][0], y + Kholder[z][1], false) &&
+      if (this->chk_layout(x + Kholder[z][0], y + Kholder[z][1]) &&
           this->layout[x + Kholder[z][0]][y + Kholder[z][1]]->color ==
               used->color)
         this->flags[used->color][GUARD].set(x + Kholder[z][0],
                                             y + Kholder[z][1]);
-      if (this->chk_layout(x + Kholder[z][1], y + Kholder[z][0], false) &&
+      if (this->chk_layout(x + Kholder[z][1], y + Kholder[z][0]) &&
           this->layout[x + Kholder[z][1]][y + Kholder[z][0]]->color ==
               used->color)
         this->flags[used->color][GUARD].set(x + Kholder[z][1],
@@ -124,28 +125,28 @@ void board::_f_guard(unsigned char x, unsigned char y) {
   case QUEEN:
   case BISHOP:
     for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color == used->color)
           this->flags[used->color][GUARD].set(z, v);
         break;
       }
     }
     for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color == used->color)
           this->flags[used->color][GUARD].set(z, v);
         break;
       }
     }
     for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color == used->color)
           this->flags[used->color][GUARD].set(z, v);
         break;
       }
     }
     for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color == used->color)
           this->flags[used->color][GUARD].set(z, v);
         break;
@@ -156,33 +157,33 @@ void board::_f_guard(unsigned char x, unsigned char y) {
       break;
   case ROOK:
     for (int z = x + 1; z < 8; z++) {
-      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color)
+      if (chk_layout(z, y) && this->layout[z][y]->color != used->color)
         break;
-      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color) {
+      if (chk_layout(z, y) && this->layout[z][y]->color == used->color) {
         this->flags[used->color][GUARD].set(z, y);
         break;
       }
     }
     for (int z = x - 1; z > -1; z--) {
-      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color)
+      if (chk_layout(z, y) && this->layout[z][y]->color != used->color)
         break;
-      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color) {
+      if (chk_layout(z, y) && this->layout[z][y]->color == used->color) {
         this->flags[used->color][GUARD].set(z, y);
         break;
       }
     }
     for (int z = y + 1; z < 8; z++) {
-      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color)
+      if (chk_layout(x, z) && this->layout[x][z]->color != used->color)
         break;
-      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color) {
+      if (chk_layout(x, z) && this->layout[x][z]->color == used->color) {
         this->flags[used->color][GUARD].set(x, z);
         break;
       }
     }
     for (int z = y - 1; z > -1; z--) {
-      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color)
+      if (chk_layout(x, z) && this->layout[x][z]->color != used->color)
         break;
-      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color) {
+      if (chk_layout(x, z) && this->layout[x][z]->color == used->color) {
         this->flags[used->color][GUARD].set(x, z);
         break;
       }
@@ -199,26 +200,30 @@ void board::_f_attack(unsigned char x, unsigned char y) {
   switch (used->typ) {
   case PAWN:
     if (used->color == WHITE) {
-      if (this->chk_layout(x + 1, y - 1, false))
+      if (this->chk_layout(x + 1, y - 1) &&
+          this->layout[x + 1][y - 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x + 1, y - 1);
-      if (this->chk_layout(x - 1, y - 1, false))
+      if (this->chk_layout(x - 1, y - 1) &&
+          this->layout[x - 1][y - 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x - 1, y - 1);
 
     } else {
-      if (this->chk_layout(x + 1, y + 1, false))
+      if (this->chk_layout(x + 1, y + 1) &&
+          this->layout[x + 1][y + 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x + 1, y + 1);
-      if (this->chk_layout(x - 1, y + 1, false))
+      if (this->chk_layout(x - 1, y + 1) &&
+          this->layout[x - 1][y + 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x - 1, y + 1);
     }
     break;
   case KNIGHT:
     for (int z = 0; z < 4; z++) {
-      if (this->chk_layout(x + Kholder[z][0], y + Kholder[z][1], false) &&
+      if (this->chk_layout(x + Kholder[z][0], y + Kholder[z][1]) &&
           this->layout[x + Kholder[z][0]][y + Kholder[z][1]]->color !=
               used->color)
         this->flags[used->color][ATTACK].set(x + Kholder[z][0],
                                              y + Kholder[z][1]);
-      if (this->chk_layout(x + Kholder[z][1], y + Kholder[z][0], false) &&
+      if (this->chk_layout(x + Kholder[z][1], y + Kholder[z][0]) &&
           this->layout[x + Kholder[z][1]][y + Kholder[z][0]]->color !=
               used->color)
         this->flags[used->color][ATTACK].set(x + Kholder[z][1],
@@ -228,28 +233,28 @@ void board::_f_attack(unsigned char x, unsigned char y) {
   case QUEEN:
   case BISHOP:
     for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color != used->color)
           this->flags[used->color][ATTACK].set(z, v);
         break;
       }
     }
     for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color != used->color)
           this->flags[used->color][ATTACK].set(z, v);
         break;
       }
     }
     for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color != used->color)
           this->flags[used->color][ATTACK].set(z, v);
         break;
       }
     }
     for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
-      if (chk_layout(z, v, false)) {
+      if (chk_layout(z, v)) {
         if (this->layout[z][v]->color != used->color)
           this->flags[used->color][ATTACK].set(z, v);
         break;
@@ -260,33 +265,33 @@ void board::_f_attack(unsigned char x, unsigned char y) {
       break;
   case ROOK:
     for (int z = x + 1; z < 8; z++) {
-      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color)
+      if (chk_layout(z, y) && this->layout[z][y]->color == used->color)
         break;
-      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color) {
+      if (chk_layout(z, y) && this->layout[z][y]->color != used->color) {
         this->flags[used->color][ATTACK].set(z, y);
         break;
       }
     }
     for (int z = x - 1; z > -1; z--) {
-      if (chk_layout(z, y, false) && this->layout[z][y]->color == used->color)
+      if (chk_layout(z, y) && this->layout[z][y]->color == used->color)
         break;
-      if (chk_layout(z, y, false) && this->layout[z][y]->color != used->color) {
+      if (chk_layout(z, y) && this->layout[z][y]->color != used->color) {
         this->flags[used->color][ATTACK].set(z, y);
         break;
       }
     }
     for (int z = y + 1; z < 8; z++) {
-      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color)
+      if (chk_layout(x, z) && this->layout[x][z]->color == used->color)
         break;
-      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color) {
+      if (chk_layout(x, z) && this->layout[x][z]->color != used->color) {
         this->flags[used->color][ATTACK].set(x, z);
         break;
       }
     }
     for (int z = y - 1; z > -1; z--) {
-      if (chk_layout(x, z, false) && this->layout[x][z]->color == used->color)
+      if (chk_layout(x, z) && this->layout[x][z]->color == used->color)
         break;
-      if (chk_layout(x, z, false) && this->layout[x][z]->color != used->color) {
+      if (chk_layout(x, z) && this->layout[x][z]->color != used->color) {
         this->flags[used->color][ATTACK].set(x, z);
         break;
       }
