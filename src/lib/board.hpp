@@ -33,6 +33,7 @@ public:
   bool playing;
   char points[2];
   char kings[2][2];
+  char szach[2];
   board();
   ~board();
   void operator=(const board b);
@@ -46,12 +47,13 @@ public:
   void kinglogic(const char x, const char y);
 
 private:
-  void _f_Fking(const unsigned char color);
+  Matrix _f_Fking(const unsigned char color);
   void flag_(const unsigned char x, const unsigned char y);
   void _f_guard(const unsigned char x, const unsigned char y);
   void _f_move(const unsigned char x, const unsigned char y);
   void _f_placed(const unsigned char x, const unsigned char y);
   void _f_attack(const unsigned char x, const unsigned char y);
+  Matrix _f_layout(const char color);
   bool chk_layout(const unsigned char x, const unsigned char y);
 };
 #endif

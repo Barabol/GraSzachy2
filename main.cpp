@@ -139,6 +139,10 @@ int main() {
         selected.used = mainboard->layout[x][y];
       } else if (selected.moves.value(x, y)) {
         mainboard->move(selected.x, selected.y, x, y);
+        if (selected.used->typ == KING) {
+          mainboard->kings[selected.used->color][0] = x;
+          mainboard->kings[selected.used->color][1] = y;
+        }
         selected.x = -1;
         selected.moves.clear();
       } else {

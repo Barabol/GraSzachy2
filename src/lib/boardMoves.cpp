@@ -189,7 +189,7 @@ void board::_f_guard(const unsigned char x, const unsigned char y) {
       }
     }
     break;
-  case KING: // to trzeba dodać
+  case KING: // to trzeba dodać jednak nie
 
     break;
   }
@@ -302,6 +302,90 @@ void board::_f_attack(unsigned char x, unsigned char y) {
 
     break;
   }
+}
+Matrix board::_f_layout(const char color) {
+  Matrix returner;
+  returner.clear();
+  const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
+  for (int x = 0; x < 8; x++)
+    for (int y = 0; y < 8; y++)
+      if (this->layout[x][y] && this->layout[x][y]->color == color) {
+        piece *used = this->layout[x][y];
+        switch (this->layout[x][y]->typ) {
+        case PAWN:
+          if (color == WHITE) {
+            if (y - 1 > -1) {
+              if (x - 1 > -1)
+                returner.set(x - 1, y - 1);
+              if (x + 1 < 8)
+                returner.set(x + 1, y - 1);
+            }
+          } else {
+            if (y + 1 < 8) {
+              if (x - 1 > -1)
+                returner.set(x - 1, y + 1);
+              if (x + 1 < 8)
+                returner.set(x + 1, y + 1);
+            }
+          }
+          break;
+        case KNIGHT:
+          for (int z = 0; z < 4; z++) {
+            if (!this->chk_layout(x + Kholder[z][0], y + Kholder[z][1]))
+              returner.set(x + Kholder[z][0], y + Kholder[z][1]);
+            if (!this->chk_layout(x + Kholder[z][1], y + Kholder[z][0]))
+              returner.set(x + Kholder[z][1], y + Kholder[z][0]);
+          }
+          break;
+        case QUEEN:
+        case BISHOP:
+          for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
+            if (chk_layout(z, v))
+              break;
+            returner.set(z, v);
+          }
+          for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
+            if (chk_layout(z, v))
+              break;
+            returner.set(z, v);
+          }
+          for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
+            if (chk_layout(z, v))
+              break;
+            returner.set(z, v);
+          }
+          for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
+            if (chk_layout(z, v))
+              break;
+            returner.set(z, v);
+          }
+          if (used->typ == BISHOP)
+            break;
+        case ROOK:
+          for (int z = x + 1; z < 8; z++) {
+            if (chk_layout(z, y))
+              break;
+            returner.set(z, y);
+          }
+          for (int z = y + 1; z < 8; z++) {
+            if (chk_layout(x, z))
+              break;
+            returner.set(x, z);
+          }
+          for (int z = x - 1; z > -1; z--) {
+            if (chk_layout(z, y))
+              break;
+            returner.set(z, y);
+          }
+          for (int z = y - 1; z > -1; z--) {
+            if (chk_layout(x, z))
+              break;
+            returner.set(x, z);
+          }
+          break;
+        }
+      }
+  return returner;
 }
 void board::_f_placed(unsigned char x, unsigned char y) {
   this->flags[this->layout[x][y]->color][PLACED].set(x, y);
