@@ -113,11 +113,16 @@ int main() {
         active = 0;
         break;
       case 18:
+#ifndef MAUNAL_ROUND_CHANGE
         mainboard->switchPlayer();
+#endif
         // board.clear(1200);
         break;
       default:
+#ifdef DEBUG
         printf("--%d--\n", event.keyboard.keycode);
+#endif
+        break;
       }
       break;
     case 20: // move
@@ -129,7 +134,9 @@ int main() {
           mainboard->layout[x][y]->color == mainboard->playing) {
         if (mainboard->layout[x][y]->typ == KING)
           mainboard->kinglogic(x, y);
+#ifdef DEBUG
         mainboard->print();
+#endif
         selected.moves.clear();
         selected.moves =
             (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
@@ -149,7 +156,9 @@ int main() {
         selected.x = -1;
         selected.moves.clear();
       }
+#ifdef DEBUG
       selected.moves.print();
+#endif
       break;
     case 42:
       active = 0;

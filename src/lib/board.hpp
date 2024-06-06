@@ -12,7 +12,14 @@ enum TYPES : int {
   WHITE = 0,
   BLACK = 1
 };
-
+enum MOVEMENT_FLAGS : int {
+  NONE,
+  CAPTURE,
+  SZACH,
+  SZACH_MAT,
+  CASTLE_SHORT,
+  CASTLE_LONG
+};
 class piece {
 public:
   char typ;
@@ -43,7 +50,7 @@ public:
   void flagAll(const unsigned char color);
   void flagAll();
   void switchPlayer();
-  void move(const char px, const char py, const char x, const char y);
+  char move(const char px, const char py, const char x, const char y);
   void kinglogic(const char x, const char y);
 
 private:
