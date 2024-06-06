@@ -24,6 +24,7 @@ char piece::value() {
   }
   return 0;
 }
+void board::setPfunction(char (*f)(char)) { this->promotionFunction = f; }
 void board::switchPlayer() { this->playing = (~this->playing) & 1; }
 void board::operator=(board b) {}
 void board::clear() {

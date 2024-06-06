@@ -27,6 +27,16 @@ char board::move(const char px, const char py, const char x, const char y) {
     this->layout[x][y] = this->layout[px][py];
     this->layout[px][py] = nullptr;
   }
+  if (used->typ == PAWN && (y == 7 || y == 0)) {
+    retval = PROMOTION;
+    if (this->promotionFunction)
+      used->typ = this->promotionFunction(used->color);
+    else
+      used->typ = QUEEN;
+#ifdef DEBUG
+    puts("awans");
+#endif
+  }
   used->notMoved = false;
   this->flagAll();
   if (this->flags[this->playing][ATTACK].value(

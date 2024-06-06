@@ -15,6 +15,7 @@ enum TYPES : int {
 enum MOVEMENT_FLAGS : int {
   NONE,
   CAPTURE,
+  PROMOTION,
   SZACH,
   SZACH_MAT,
   CASTLE_SHORT,
@@ -52,8 +53,10 @@ public:
   void switchPlayer();
   char move(const char px, const char py, const char x, const char y);
   void kinglogic(const char x, const char y);
+  void setPfunction(char (*f)(char));
 
 private:
+  char (*promotionFunction)(char);
   Matrix _f_Fking(const unsigned char color);
   void flag_(const unsigned char x, const unsigned char y);
   void _f_guard(const unsigned char x, const unsigned char y);

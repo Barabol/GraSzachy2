@@ -24,6 +24,57 @@ typedef struct {
   unsigned char x, y;
   piece *used;
 } selection;
+char promotion(char color) {
+  ALLEGRO_BITMAP *textures[2][6] = {
+      {al_load_bitmap("./src/img/wp.png"), al_load_bitmap("./src/img/wn.png"),
+       al_load_bitmap("./src/img/wb.png"), al_load_bitmap("./src/img/wr.png"),
+       al_load_bitmap("./src/img/wq.png"), al_load_bitmap("./src/img/wk.png")},
+      {al_load_bitmap("./src/img/bp.png"), al_load_bitmap("./src/img/bn.png"),
+       al_load_bitmap("./src/img/bb.png"), al_load_bitmap("./src/img/br.png"),
+       al_load_bitmap("./src/img/bq.png"), al_load_bitmap("./src/img/bk.png")},
+  };
+  char holder = QUEEN;
+  al_draw_filled_rectangle(0, 300, 720, 420, al_map_rgb(0, 0, 0));
+  for (int x = 1; x < 5; x++) {
+    al_draw_filled_rectangle((72 * x) + (90 * (x - 1)), 315,
+                             (72 * x) + (90 * x), 405, al_map_rgb(50, 50, 50));
+    al_draw_bitmap(textures[color][x], (72 * x) + (90 * (x - 1)), 315, 0);
+  }
+  al_flip_display();
+  ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
+  ALLEGRO_EVENT event;
+  al_register_event_source(queue, al_get_mouse_event_source());
+  char gut;
+get_gut: // każdy dobry program WYMAGA goto
+  al_wait_for_event(queue, &event);
+  if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+    if (event.mouse.x > 72 && event.mouse.x < 72 + 90 && event.mouse.y > 315 &&
+        event.mouse.y < 405) {
+      holder = KNIGHT;
+      gut = true;
+    } else if (event.mouse.x > 234 && event.mouse.x < 234 + 90 &&
+               event.mouse.y > 315 && event.mouse.y < 405) {
+      holder = BISHOP;
+      gut = true;
+    } else if (event.mouse.x > 396 && event.mouse.x < 396 + 90 &&
+               event.mouse.y > 315 && event.mouse.y < 405) {
+      holder = ROOK;
+      gut = true;
+    } else if (event.mouse.x > 558 && event.mouse.x < 558 + 90 &&
+               event.mouse.y > 315 && event.mouse.y < 405) {
+      holder = QUEEN;
+      gut = true;
+    }
+  }
+  if (gut == false)
+    goto get_gut;
+  for (int x = 0; x < 2; x++)
+    for (int y = 0; y < 6; y++)
+      al_destroy_bitmap(textures[x][y]);
+  al_flush_event_queue(queue);
+  al_destroy_event_queue(queue);
+  return holder;
+}
 void render(ALLEGRO_BITMAP *bitMap[3][6], board *brd, selection *selected) {
   static const ALLEGRO_COLOR colors[2] = {al_map_rgb(255, 0, 0),
                                           al_map_rgb(0, 255, 0)};
@@ -43,7 +94,9 @@ void render(ALLEGRO_BITMAP *bitMap[3][6], board *brd, selection *selected) {
         al_draw_bitmap(bitMap[2][0], TILE_SIZE * x, TILE_SIZE * y, 0);
     }
   al_flip_display();
+  // promotion(WHITE);
 }
+
 int main() {
   al_init();
   al_init_primitives_addon();
@@ -83,9 +136,12 @@ int main() {
   selection selected;
   board *mainboard = new board;
   Timer maintimer(mainboard, 1200);
-
+#ifdef PROMOTION_CHOICE
+  mainboard->setPfunction(promotion);
+#endif
+#ifdef BONUS_QUEEN
   mainboard->layout[3][3] = new piece(WHITE, QUEEN);
-
+#endif
   while (active) {
     al_wait_for_event(queue, &event);
     switch (event.type) {
@@ -112,11 +168,17 @@ int main() {
       case 59:
         active = 0;
         break;
-      case 18:
+      case 17:
 #ifndef MAUNAL_ROUND_CHANGE
         mainboard->switchPlayer();
 #endif
         // board.clear(1200);
+        break;
+      case 18:
+#ifdef RESTART_KEYBIND
+        mainboard->clear();
+        maintimer.setto(1200);
+#endif
         break;
       default:
 #ifdef DEBUG
@@ -146,6 +208,7 @@ int main() {
         selected.used = mainboard->layout[x][y];
       } else if (selected.moves.value(x, y)) {
         mainboard->move(selected.x, selected.y, x, y);
+        al_flush_event_queue(queue);
         if (selected.used->typ == KING) {
           mainboard->kings[selected.used->color][0] = x;
           mainboard->kings[selected.used->color][1] = y;
