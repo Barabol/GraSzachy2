@@ -24,10 +24,17 @@ char piece::value() {
   }
   return 0;
 }
+void board::clearAllFlags() {
+  for (int x = 0; x < 4; x++) {
+    this->flags[WHITE][x].clear();
+    this->flags[BLACK][x].clear();
+  }
+}
 void board::setPfunction(char (*f)(char)) { this->promotionFunction = f; }
 void board::switchPlayer() { this->playing = (~this->playing) & 1; }
 void board::operator=(board b) {}
 void board::clear() {
+  this->enPassant.passantable = nullptr;
   this->points[0] = 0;
   this->points[1] = 0;
   this->playing = WHITE;

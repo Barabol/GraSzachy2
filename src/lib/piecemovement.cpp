@@ -4,12 +4,14 @@
 char board::move(const char px, const char py, const char x, const char y) {
   char retval = NONE;
   piece *used = this->layout[px][py];
+
   if (this->layout[x][y]) {
     this->points[this->playing] += this->layout[x][y]->value();
     this->layout[x][y]->~piece();
     this->layout[x][y] = this->layout[px][py];
     this->layout[px][py] = nullptr;
     retval = CAPTURE;
+    this->enPassant.passantable = nullptr;
   } else {
     if (used->typ == KING && used->notMoved) {
       if (x == 2) {
@@ -24,6 +26,20 @@ char board::move(const char px, const char py, const char x, const char y) {
         this->layout[5][y]->notMoved = false;
       }
     }
+    if (used->typ == PAWN && !used->notMoved &&
+        ((px - x) == 1 || (x - px) == 1)) {
+      this->points[this->playing] +=
+          this->layout[this->enPassant.x][this->enPassant.y]->value();
+      this->enPassant.passantable->~piece();
+      this->layout[this->enPassant.x][this->enPassant.y] = nullptr;
+    }
+
+    if (used->typ == PAWN && (y - py == -2 || y - py == 2)) {
+      this->enPassant.x = x;
+      this->enPassant.y = y;
+      this->enPassant.passantable = used;
+    } else
+      this->enPassant.passantable = nullptr;
     this->layout[x][y] = this->layout[px][py];
     this->layout[px][py] = nullptr;
   }

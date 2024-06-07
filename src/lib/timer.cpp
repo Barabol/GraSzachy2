@@ -1,4 +1,5 @@
 #include "timer.hpp"
+#include "consts.hpp"
 Timer::Timer(board *brd, unsigned int time_) {
   this->playing = &(brd->playing);
   this->setto(time_);
@@ -11,6 +12,21 @@ unsigned int Timer::operator[](char a) {
     return this->times[1];
 }
 bool Timer::operator--() {
+  if (frameCounter > 0) {
+    frameCounter--;
+    if (*this->playing) {
+      if (!this->times[1])
+        return true;
+      else
+        return false;
+    } else {
+      if (!this->times[0])
+        return true;
+      else
+        return false;
+    }
+  } else
+    frameCounter = FRAMES;
   if (*this->playing) {
     if (this->times[1])
       this->times[1]--;

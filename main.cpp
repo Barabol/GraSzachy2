@@ -3,6 +3,7 @@
 #include "./src/lib/consts.hpp"
 #include "./src/lib/timer.hpp"
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
@@ -21,7 +22,7 @@
 #include <stdio.h>
 typedef struct {
   Matrix moves;
-  unsigned char x, y;
+  char x, y;
   piece *used;
 } selection;
 char promotion(char color) {
@@ -88,10 +89,12 @@ void render(ALLEGRO_BITMAP *bitMap[3][6], board *brd, selection *selected) {
         al_draw_bitmap(bitMap[brd->layout[x][y]->color][brd->layout[x][y]->typ],
                        TILE_SIZE * x, TILE_SIZE * y, 0);
       }
-      if (selected->x == x && selected->y == y)
-        al_draw_bitmap(bitMap[2][1], TILE_SIZE * x, TILE_SIZE * y, 0);
-      if (selected->moves.value(x, y))
-        al_draw_bitmap(bitMap[2][0], TILE_SIZE * x, TILE_SIZE * y, 0);
+      if (selected->x != -1) {
+        if (selected->x == x && selected->y == y)
+          al_draw_bitmap(bitMap[2][1], TILE_SIZE * x, TILE_SIZE * y, 0);
+        if (selected->moves.value(x, y))
+          al_draw_bitmap(bitMap[2][0], TILE_SIZE * x, TILE_SIZE * y, 0);
+      }
     }
   al_flip_display();
   // promotion(WHITE);
@@ -131,7 +134,6 @@ int main() {
 
   bool active = 1;
   char x, y;
-  char timerdec = FRAMES;
 
   selection selected;
   board *mainboard = new board;
@@ -144,23 +146,21 @@ int main() {
 #endif
   while (active) {
     al_wait_for_event(queue, &event);
+
     switch (event.type) {
     case ALLEGRO_EVENT_TIMER:
       al_clear_to_color(al_map_rgb(0, 0, 0));
-      if (timerdec)
-        timerdec--;
-      else {
-        timerdec = FRAMES;
-        --maintimer;
-      }
-      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 30, 0, "Czas: %d",
-                    maintimer[0]);
+
+      --maintimer;
+
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 30, 0, "Czas: %d:%d",
+                    maintimer[0] / 60, maintimer[0] % 60);
       al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 570, 0, "Punkty: %d",
                     mainboard->points[WHITE]);
       al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 90, 0, "Punkty: %d",
                     mainboard->points[BLACK]);
-      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 640, 0, "Czas: %d",
-                    maintimer[1]);
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 640, 0, "Czas: %d:%d",
+                    maintimer[1] / 60, maintimer[1] % 60);
       render(textures, mainboard, &selected);
       break;
     case 10:
@@ -171,6 +171,10 @@ int main() {
       case 17:
 #ifndef MAUNAL_ROUND_CHANGE
         mainboard->switchPlayer();
+        mainboard->clearAllFlags();
+        mainboard->clearAllFlags();
+        mainboard->flagAll();
+        selected.x = -1;
 #endif
         // board.clear(1200);
         break;
@@ -178,6 +182,8 @@ int main() {
 #ifdef RESTART_KEYBIND
         mainboard->clear();
         maintimer.setto(1200);
+        mainboard->clearAllFlags();
+        selected.x = -1;
 #endif
         break;
       default:

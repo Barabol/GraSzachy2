@@ -198,16 +198,31 @@ void board::_f_attack(unsigned char x, unsigned char y) {
   piece *used = this->layout[x][y];
   const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
   switch (used->typ) {
-  case PAWN:
+  case PAWN: // DODAĆ EN PASSANT
     if (used->color == WHITE) {
+      if (this->enPassant.passantable &&
+          this->enPassant.passantable->color != used->color) {
+        if (this->enPassant.y == y &&
+            (this->enPassant.x - x == 1 || this->enPassant.x - x == -1)) {
+          this->flags[used->color][ATTACK].set(this->enPassant.x,
+                                               this->enPassant.y - 1);
+        }
+      }
       if (this->chk_layout(x + 1, y - 1) &&
           this->layout[x + 1][y - 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x + 1, y - 1);
       if (this->chk_layout(x - 1, y - 1) &&
           this->layout[x - 1][y - 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x - 1, y - 1);
-
     } else {
+      if (this->enPassant.passantable &&
+          this->enPassant.passantable->color != used->color) {
+        if (this->enPassant.y == y &&
+            (this->enPassant.x - x == 1 || this->enPassant.x - x == -1)) {
+          this->flags[used->color][ATTACK].set(this->enPassant.x,
+                                               this->enPassant.y + 1);
+        }
+      }
       if (this->chk_layout(x + 1, y + 1) &&
           this->layout[x + 1][y + 1]->color != used->color)
         this->flags[used->color][ATTACK].set(x + 1, y + 1);

@@ -12,5 +12,6 @@ public:
 private:
   unsigned int times[2];
   bool *playing;
+  char frameCounter;
 };
 #endif

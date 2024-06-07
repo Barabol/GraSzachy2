@@ -54,8 +54,13 @@ public:
   char move(const char px, const char py, const char x, const char y);
   void kinglogic(const char x, const char y);
   void setPfunction(char (*f)(char));
+  void clearAllFlags();
 
 private:
+  struct {
+    char x, y;
+    piece *passantable;
+  } enPassant;
   char (*promotionFunction)(char);
   Matrix _f_Fking(const unsigned char color);
   void flag_(const unsigned char x, const unsigned char y);
