@@ -61,6 +61,8 @@ char board::move(const char px, const char py, const char x, const char y) {
 #ifdef DEBUG
     printf("szach\n");
 #endif
+    this->szach[~(this->playing) & 1] = 0;
+    this->kingFlagging((~this->playing) & 1).print("szach");
   }
 #ifndef MANUAL_ROUND_CHANGE
   this->switchPlayer();

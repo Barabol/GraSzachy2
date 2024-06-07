@@ -55,6 +55,8 @@ public:
   void kinglogic(const char x, const char y);
   void setPfunction(char (*f)(char));
   void clearAllFlags();
+  Matrix kingFlagging(const char color);
+  Matrix __k_f(const char x, const char y);
 
 private:
   struct {
