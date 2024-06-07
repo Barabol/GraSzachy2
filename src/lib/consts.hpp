@@ -10,11 +10,11 @@
 //                            UWAGA
 // z uwagi na inny sposób wyświetlania kolorów na systemie windows
 // informacje nie są wyświetlane "poprawnie"
-#define DEBUG
+// #define DEBUG
 
 // automatycznie zmienia kto gra gdy jest odznaczone zmiana gracza jest gdy
 // kliknie się przycisk "q"
-#define MANUAL_ROUND_CHANGE
+// #define MANUAL_ROUND_CHANGE
 
 // do debugowania biała królowa na start na polu D5
 #define BONUS_QUEEN

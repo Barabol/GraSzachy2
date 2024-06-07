@@ -56,7 +56,6 @@ public:
   void setPfunction(char (*f)(char));
   void clearAllFlags();
   Matrix kingFlagging(const char color);
-  Matrix __k_f(const char x, const char y);
 
 private:
   struct {
@@ -64,6 +63,7 @@ private:
     piece *passantable;
   } enPassant;
   char (*promotionFunction)(char);
+  Matrix __k_f(const char x, const char y);
   Matrix _f_Fking(const unsigned char color);
   void flag_(const unsigned char x, const unsigned char y);
   void _f_guard(const unsigned char x, const unsigned char y);

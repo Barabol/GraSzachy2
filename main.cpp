@@ -206,12 +206,19 @@ int main() {
         mainboard->print();
 #endif
         selected.moves.clear();
-        selected.moves =
-            (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
-             mainboard->flags[mainboard->layout[x][y]->color][ATTACK]);
         selected.x = x;
         selected.y = y;
         selected.used = mainboard->layout[x][y];
+        if (mainboard->szach[mainboard->playing] &&
+            selected.used->typ != KING) {
+          selected.moves =
+              (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
+               mainboard->flags[mainboard->layout[x][y]->color][ATTACK]) &
+              mainboard->kingFlagging(mainboard->playing);
+        } else
+          selected.moves =
+              (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
+               mainboard->flags[mainboard->layout[x][y]->color][ATTACK]);
       } else if (selected.moves.value(x, y)) {
         mainboard->move(selected.x, selected.y, x, y);
         al_flush_event_queue(queue);

@@ -34,6 +34,8 @@ void board::setPfunction(char (*f)(char)) { this->promotionFunction = f; }
 void board::switchPlayer() { this->playing = (~this->playing) & 1; }
 void board::operator=(board b) {}
 void board::clear() {
+  this->szach[0] = 0;
+  this->szach[1] = 0;
   this->enPassant.passantable = nullptr;
   this->points[0] = 0;
   this->points[1] = 0;

@@ -4,7 +4,11 @@
 char board::move(const char px, const char py, const char x, const char y) {
   char retval = NONE;
   piece *used = this->layout[px][py];
-
+  Matrix holder, holder2;
+  holder.clear();
+  holder2.clear();
+  if (this->szach[this->playing])
+    this->szach[this->playing] = 0;
   if (this->layout[x][y]) {
     this->points[this->playing] += this->layout[x][y]->value();
     this->layout[x][y]->~piece();
@@ -55,14 +59,39 @@ char board::move(const char px, const char py, const char x, const char y) {
   }
   used->notMoved = false;
   this->flagAll();
+
   if (this->flags[this->playing][ATTACK].value(
           this->kings[~(this->playing) & 1][0],
           this->kings[~(this->playing) & 1][1])) {
-#ifdef DEBUG
-    printf("szach\n");
-#endif
+
+    this->clearAllFlags();
     this->szach[~(this->playing) & 1] = 0;
-    this->kingFlagging((~this->playing) & 1).print("szach");
+    holder = this->kingFlagging((~this->playing) & 1);
+    retval = SZACH;
+#ifdef DEBUG
+    holder.print("szach");
+#endif
+  }
+  this->flagAll(~this->playing & 1);
+  holder2 = this->flags[(~this->playing) & 1][MOVE];
+  holder2 |= this->flags[(~this->playing) & 1][ATTACK];
+  this->kinglogic(this->kings[~this->playing & 1][0],
+                  this->kings[~this->playing & 1][1]);
+  //(holder2 & holder).print("szach-mat");
+
+  if (this->szach[(~this->playing) & 1] &&
+      (holder2 & holder).allValues() == 0 &&
+      !(this->flags[(~this->playing) & 1][MOVE] |
+        this->flags[(~this->playing) & 1][ATTACK])
+           .allValues()) {
+#ifdef DEBUG
+    (holder2 & holder).print("szach-mat");
+    (this->flags[(~this->playing) & 1][MOVE] |
+     this->flags[(~this->playing) & 1][ATTACK])
+        .print("szachowanie ");
+#endif
+    printf("szach-mat\n");
+    retval = SZACH_MAT;
   }
 #ifndef MANUAL_ROUND_CHANGE
   this->switchPlayer();
@@ -81,7 +110,7 @@ void board::kinglogic(const char x, const char y) {
   Matrix roszada;
   roszada.clear();
   this->flagAll(color);
-  if (this->layout[x][y]->notMoved) {
+  if (this->layout[x][y]->notMoved && !this->szach[color]) {
     if (this->layout[x][y]->color == WHITE) {
       if (this->layout[0][7] && this->layout[0][7]->notMoved) {
         roszada.set(1, 7);
