@@ -155,10 +155,10 @@ int main() {
 
       al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 30, 0, "Czas: %d:%d",
                     maintimer[0] / 60, maintimer[0] % 60);
-      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 570, 0, "Punkty: %d",
-                    mainboard->points[WHITE]);
-      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 90, 0, "Punkty: %d",
-                    mainboard->points[BLACK]);
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 570, 0, "Materiał: %d",
+                    mainboard->points[WHITE] - mainboard->points[BLACK]);
+      al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 90, 0, "Materiał: %d",
+                    mainboard->points[BLACK] - mainboard->points[WHITE]);
       al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 640, 0, "Czas: %d:%d",
                     maintimer[1] / 60, maintimer[1] % 60);
       render(textures, mainboard, &selected);

@@ -250,6 +250,7 @@ void board::kinglogic(const char x, const char y) {
   non.clear();
   non |= this->_f_Fking((~color) & 1);
   non |= this->_f_layout((~color) & 1);
+  non |= this->_f_attack_Extra((~color) & 1);
 #ifdef DEBUG
   non.print("non");
 #endif
@@ -266,7 +267,9 @@ Matrix board::_f_Fking(const unsigned char color) {
       if (this->layout[x][y] && this->layout[x][y]->typ == KING &&
           this->layout[x][y]->color == color)
         goto exit;
+  return holder;
 exit:
+
   if (x + 1 < 8) {
     if (this->layout[x + 1][y]) {
       if (this->layout[x + 1][y]->color == color)

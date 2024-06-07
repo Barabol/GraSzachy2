@@ -70,6 +70,7 @@ private:
   void _f_move(const unsigned char x, const unsigned char y);
   void _f_placed(const unsigned char x, const unsigned char y);
   void _f_attack(const unsigned char x, const unsigned char y);
+  Matrix _f_attack_Extra(const char color);
   Matrix _f_layout(const char color);
   bool chk_layout(const unsigned char x, const unsigned char y);
 };
