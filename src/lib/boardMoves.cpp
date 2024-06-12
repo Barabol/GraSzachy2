@@ -1,6 +1,5 @@
 #include "board.hpp"
 #include "consts.hpp"
-#include <stdio.h>
 Matrix board::_f_attack_Extra_Extra(const char x, const char y, const char Ax,
                                     const char Ay) {
   Matrix holder;
@@ -15,6 +14,8 @@ Matrix board::_f_attack_Extra_Extra(const char x, const char y, const char Ax,
   case BISHOP:
     for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
       holder2.set(z, v);
+      if (chk_layout(z, v) && this->layout[z][v]->color == used->color)
+        break;
       if (chk_layout(z, v)) {
         if (z == Ax && v == Ay) {
           working = 1;
@@ -34,6 +35,8 @@ Matrix board::_f_attack_Extra_Extra(const char x, const char y, const char Ax,
     working = 0;
     for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
       holder2.set(z, v);
+      if (chk_layout(z, v) && this->layout[z][v]->color == used->color)
+        break;
       if (chk_layout(z, v)) {
         if (z == Ax && v == Ay) {
           working = 1;
@@ -53,6 +56,8 @@ Matrix board::_f_attack_Extra_Extra(const char x, const char y, const char Ax,
     working = 0;
     for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
       holder2.set(z, v);
+      if (chk_layout(z, v) && this->layout[z][v]->color == used->color)
+        break;
       if (chk_layout(z, v)) {
         if (z == Ax && v == Ay) {
           working = 1;
@@ -72,6 +77,8 @@ Matrix board::_f_attack_Extra_Extra(const char x, const char y, const char Ax,
     working = 0;
     for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
       holder2.set(z, v);
+      if (chk_layout(z, v) && this->layout[z][v]->color == used->color)
+        break;
       if (chk_layout(z, v)) {
         if (z == Ax && v == Ay) {
           working = 1;
