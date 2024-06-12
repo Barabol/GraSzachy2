@@ -1,8 +1,11 @@
 #include "board.hpp"
 #include "consts.hpp"
 #include <stdio.h>
-char board::move(const char px, const char py, const char x, const char y) {
-  char retval = NONE;
+returnType board::move(const char px, const char py, const char x,
+                       const char y) {
+  returnType retval;
+  retval.move = NONE;
+  retval.szach = NONE;
   piece *used = this->layout[px][py];
   Matrix holder, holder2;
   holder.clear();
@@ -14,19 +17,19 @@ char board::move(const char px, const char py, const char x, const char y) {
     this->layout[x][y]->~piece();
     this->layout[x][y] = this->layout[px][py];
     this->layout[px][py] = nullptr;
-    retval = CAPTURE;
+    retval.move = CAPTURE;
     this->enPassant.passantable = nullptr;
   } else {
     if (used->typ == KING && used->notMoved) {
       if (x == 2) {
         this->layout[3][y] = this->layout[0][y];
         this->layout[0][y] = nullptr;
-        retval = CASTLE_LONG;
+        retval.move = CASTLE_LONG;
         this->layout[3][y]->notMoved = false;
       } else if (x == 6) {
         this->layout[5][y] = this->layout[7][y];
         this->layout[7][y] = nullptr;
-        retval = CASTLE_SHORT;
+        retval.move = CASTLE_SHORT;
         this->layout[5][y]->notMoved = false;
       }
     }
@@ -48,7 +51,7 @@ char board::move(const char px, const char py, const char x, const char y) {
     this->layout[px][py] = nullptr;
   }
   if (used->typ == PAWN && (y == 7 || y == 0)) {
-    retval = PROMOTION;
+    retval.move = PROMOTION;
     if (this->promotionFunction)
       used->typ = this->promotionFunction(used->color);
     else
@@ -67,7 +70,7 @@ char board::move(const char px, const char py, const char x, const char y) {
     this->clearAllFlags();
     this->szach[~(this->playing) & 1] = 0;
     holder = this->kingFlagging((~this->playing) & 1);
-    retval = SZACH;
+    retval.szach = SZACH;
 #ifdef DEBUG
     holder.print("szach");
 #endif
@@ -91,7 +94,7 @@ char board::move(const char px, const char py, const char x, const char y) {
         .print("szachowanie ");
 #endif
     printf("szach-mat\n");
-    retval = SZACH_MAT;
+    retval.szach = SZACH_MAT;
   }
 #ifndef MANUAL_ROUND_CHANGE
   this->switchPlayer();

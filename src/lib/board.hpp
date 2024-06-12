@@ -21,8 +21,13 @@ enum MOVEMENT_FLAGS : int {
   CASTLE_SHORT,
   CASTLE_LONG
 };
+typedef struct {
+  MOVEMENT_FLAGS move;
+  MOVEMENT_FLAGS szach;
+} returnType;
 class piece {
 public:
+  char pinned;
   char typ;
   char color;
   bool notMoved;
@@ -30,6 +35,8 @@ public:
   ~piece();
   char symbol();
   char value();
+  void clearPin();
+  void setPin();
 
 private:
 };
@@ -51,11 +58,12 @@ public:
   void flagAll(const unsigned char color);
   void flagAll();
   void switchPlayer();
-  char move(const char px, const char py, const char x, const char y);
+  returnType move(const char px, const char py, const char x, const char y);
   void kinglogic(const char x, const char y);
   void setPfunction(char (*f)(char));
   void clearAllFlags();
   Matrix kingFlagging(const char color);
+  Matrix isPinned(const char x, const char y);
 
 private:
   struct {
@@ -63,6 +71,8 @@ private:
     piece *passantable;
   } enPassant;
   char (*promotionFunction)(char);
+  Matrix _f_attack_Extra_Extra(const char x, const char y, const char Ax,
+                               const char Ay);
   Matrix __k_f(const char x, const char y);
   Matrix _f_Fking(const unsigned char color);
   void flag_(const unsigned char x, const unsigned char y);

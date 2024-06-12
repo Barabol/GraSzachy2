@@ -97,7 +97,8 @@ void board::print() {
 piece::piece(char kolor, char typ) {
   this->color = kolor;
   this->typ = typ;
-  notMoved = true;
+  this->notMoved = true;
+  this->pinned = 0;
 }
 piece::~piece() {}
 char piece::symbol() {
@@ -117,3 +118,5 @@ char piece::symbol() {
   }
   return '?';
 }
+void piece::clearPin() { this->pinned = 0; }
+void piece::setPin() { this->pinned++; }

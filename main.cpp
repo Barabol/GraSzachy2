@@ -109,6 +109,7 @@ int main() {
   al_init_font_addon();
   al_init_ttf_addon();
   al_install_audio();
+  al_init_acodec_addon();
 
   ALLEGRO_DISPLAY *display = al_create_display(D_WIDTH, D_HEIGHT);
   ALLEGRO_FONT *font = al_load_font("./src/ttf/Sans.ttf", 30, 0);
@@ -169,7 +170,7 @@ int main() {
         active = 0;
         break;
       case 17:
-#ifndef MAUNAL_ROUND_CHANGE
+#ifdef MAUNAL_ROUND_CHANGE
         mainboard->switchPlayer();
         mainboard->clearAllFlags();
         mainboard->clearAllFlags();
@@ -219,6 +220,13 @@ int main() {
           selected.moves =
               (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
                mainboard->flags[mainboard->layout[x][y]->color][ATTACK]);
+        mainboard->isPinned(x, y);
+        if (mainboard->layout[x][y]->pinned) {
+          selected.moves &= mainboard->isPinned(x, y);
+#ifdef DEBUG
+          printf("pinowany: %d\n", mainboard->isPinned(x, y).allValues());
+#endif
+        }
       } else if (selected.moves.value(x, y)) {
         mainboard->move(selected.x, selected.y, x, y);
         al_flush_event_queue(queue);

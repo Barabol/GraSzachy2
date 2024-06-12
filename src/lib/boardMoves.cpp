@@ -1,4 +1,193 @@
 #include "board.hpp"
+#include "consts.hpp"
+#include <stdio.h>
+Matrix board::_f_attack_Extra_Extra(const char x, const char y, const char Ax,
+                                    const char Ay) {
+  Matrix holder;
+  Matrix holder2;
+  holder2.clear();
+  char working = 0;
+  holder.clear();
+  piece *used = this->layout[x][y];
+  const char Kholder[4][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
+  switch (used->typ) {
+  case QUEEN:
+  case BISHOP:
+    for (int z = x + 1, v = y + 1; z < 8 && v < 8; z++, v++) {
+      holder2.set(z, v);
+      if (chk_layout(z, v)) {
+        if (z == Ax && v == Ay) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[z][v]->color != used->color && working &&
+            this->layout[z][v]->typ == KING) {
+          this->layout[Ax][Ay]->setPin();
+          holder.set(x, y);
+          holder |= holder2;
+        } else if (this->layout[z][v])
+          break;
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    for (int z = x - 1, v = y + 1; z > -1 && v < 8; z--, v++) {
+      holder2.set(z, v);
+      if (chk_layout(z, v)) {
+        if (z == Ax && v == Ay) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[z][v]->color != used->color && working &&
+            this->layout[z][v]->typ == KING) {
+          this->layout[Ax][Ay]->setPin();
+          holder.set(x, y);
+          holder |= holder2;
+        } else if (this->layout[z][v])
+          break;
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    for (int z = x + 1, v = y - 1; z < 8 && v > -1; z++, v--) {
+      holder2.set(z, v);
+      if (chk_layout(z, v)) {
+        if (z == Ax && v == Ay) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[z][v]->color != used->color && working &&
+            this->layout[z][v]->typ == KING) {
+          this->layout[Ax][Ay]->setPin();
+          holder.set(x, y);
+          holder |= holder2;
+        } else if (this->layout[z][v])
+          break;
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    for (int z = x - 1, v = y - 1; z > -1 && v > -1; z--, v--) {
+      holder2.set(z, v);
+      if (chk_layout(z, v)) {
+        if (z == Ax && v == Ay) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[z][v]->color != used->color && working &&
+            this->layout[z][v]->typ == KING) {
+          this->layout[Ax][Ay]->setPin();
+          holder.set(x, y);
+          holder |= holder2;
+        } else if (this->layout[z][v])
+          break;
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    if (used->typ == BISHOP)
+      break;
+  case ROOK:
+    for (int z = x + 1; z < 8; z++) {
+      holder2.set(z, y);
+      if (chk_layout(z, y) && this->layout[z][y]->color == used->color)
+        break;
+      if (chk_layout(z, y) && this->layout[z][y]->color != used->color) {
+        if (z == Ax && Ay == y) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[z][y]->typ == KING && working) {
+          holder.set(x, y);
+          holder |= holder2;
+          this->layout[Ax][Ay]->setPin();
+        }
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    for (int z = x - 1; z > -1; z--) {
+      holder2.set(z, y);
+      if (chk_layout(z, y) && this->layout[z][y]->color == used->color)
+        break;
+      if (chk_layout(z, y) && this->layout[z][y]->color != used->color) {
+        if (z == Ax && Ay == y) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[z][y]->typ == KING && working) {
+          holder.set(x, y);
+          holder |= holder2;
+          this->layout[Ax][Ay]->setPin();
+        }
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    for (int z = y + 1; z < 8; z++) {
+      holder2.set(x, z);
+      if (chk_layout(x, z) && this->layout[x][z]->color == used->color)
+        break;
+      if (chk_layout(x, z) && this->layout[x][z]->color != used->color) {
+        if (x == Ax && Ay == z) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[x][z]->typ == KING && working) {
+          holder.set(x, y);
+          holder |= holder2;
+          this->layout[Ax][Ay]->setPin();
+        }
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    for (int z = y - 1; z > -1; z--) {
+      holder2.set(x, z);
+      if (chk_layout(x, z) && this->layout[x][z]->color == used->color)
+        break;
+      if (chk_layout(x, z) && this->layout[x][z]->color != used->color) {
+        if (x == Ax && Ay == z) {
+          working = 1;
+          continue;
+        }
+        if (this->layout[x][z]->typ == KING && working) {
+          holder.set(x, y);
+          holder |= holder2;
+          this->layout[Ax][Ay]->setPin();
+        }
+        break;
+      }
+    }
+    holder2.clear();
+    working = 0;
+    break;
+  }
+  return holder;
+}
+Matrix board::isPinned(const char x, const char y) {
+  Matrix holder;
+  holder.clear();
+  this->layout[x][y]->clearPin();
+  for (int z = 0; z < 8; z++)
+    for (int v = 0; v < 8; v++)
+      if (this->layout[z][v]) {
+        holder |= _f_attack_Extra_Extra(z, v, x, y);
+      }
+#ifdef DEBUG
+  holder.print("pin");
+#endif
+  if (!holder.allValues())
+    this->layout[x][y]->clearPin();
+  return holder;
+}
 bool board::chk_layout(const unsigned char x, const unsigned char y) {
   if (y > 7 || y < 0 || x > 7 || x < 0)
     return false;
