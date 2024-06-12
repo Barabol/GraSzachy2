@@ -1,11 +1,20 @@
 #ifndef __CONSTANTS__
 #define __CONSTANTS__
 
+#include "binaryMatrix.hpp"
+#include "board.hpp"
+
 #define D_WIDTH 1280
 #define D_HEIGHT 720
 #define FRAMES 15
 #define TILE_SIZE 90
+#define RECURSION_LIMIT 130
 
+typedef struct {
+  Matrix moves;
+  char x, y;
+  piece *used;
+} selection;
 /*-----BUILD-FLAGS------*/
 
 // po prostu informacje debugowe
@@ -26,6 +35,9 @@
 
 // po kliknięciu przycisku "r" restartuje całą plansze jak i timer
 #define RESTART_KEYBIND
+
+// po kliknięciu przycisku "i" bot dokonuje ruchu
+#define MANUAL_AI_MOVE
 
 /*----------------------*/
 #endif

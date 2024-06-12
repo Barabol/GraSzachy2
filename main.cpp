@@ -1,5 +1,6 @@
 #include "./src/lib/binaryMatrix.hpp"
 #include "./src/lib/board.hpp"
+#include "./src/lib/chessBot.hpp"
 #include "./src/lib/consts.hpp"
 #include "./src/lib/timer.hpp"
 #include <allegro5/allegro.h>
@@ -20,11 +21,54 @@
 #include <allegro5/mouse.h>
 #include <allegro5/timer.h>
 #include <stdio.h>
-typedef struct {
-  Matrix moves;
-  char x, y;
-  piece *used;
-} selection;
+char makeMove(selection *selected, board *mainboard, char x, char y) {
+  char retval = 0;
+  if (mainboard->flag(x, y) && mainboard->layout[x][y] &&
+      mainboard->layout[x][y]->color == mainboard->playing) {
+    if (mainboard->layout[x][y]->typ == KING)
+      mainboard->kinglogic(x, y);
+#ifdef DEBUG
+    mainboard->print();
+#endif
+    selected->moves.clear();
+    selected->x = x;
+    selected->y = y;
+    selected->used = mainboard->layout[x][y];
+    if (mainboard->szach[mainboard->playing] && selected->used->typ != KING) {
+      selected->moves =
+          (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
+           mainboard->flags[mainboard->layout[x][y]->color][ATTACK]) &
+          mainboard->kingFlagging(mainboard->playing);
+    } else
+      selected->moves =
+          (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
+           mainboard->flags[mainboard->layout[x][y]->color][ATTACK]);
+    mainboard->isPinned(x, y);
+    if (mainboard->layout[x][y]->pinned) {
+      selected->moves &= mainboard->isPinned(x, y);
+#ifdef DEBUG
+      printf("pinowany: %d\n", mainboard->isPinned(x, y).allValues());
+#endif
+    }
+  } else if (selected->moves.value(x, y)) {
+    mainboard->move(selected->x, selected->y, x, y);
+    retval = 1;
+    // al_flush_event_queue(queue);
+    if (selected->used->typ == KING) {
+      mainboard->kings[selected->used->color][0] = x;
+      mainboard->kings[selected->used->color][1] = y;
+    }
+    selected->x = -1;
+    selected->moves.clear();
+  } else {
+    selected->x = -1;
+    selected->moves.clear();
+  }
+#ifdef DEBUG
+  selected->moves.print();
+#endif
+  return retval;
+}
 char promotion(char color) {
   ALLEGRO_BITMAP *textures[2][6] = {
       {al_load_bitmap("./src/img/wp.png"), al_load_bitmap("./src/img/wn.png"),
@@ -136,8 +180,12 @@ int main() {
   bool active = 1;
   char x, y;
 
-  selection selected;
+  selection *selected = new selection;
   board *mainboard = new board;
+
+  bot mainbot(mainboard, selected, makeMove);
+  moveLoc botMovement;
+
   Timer maintimer(mainboard, 1200);
 #ifdef PROMOTION_CHOICE
   mainboard->setPfunction(promotion);
@@ -162,10 +210,13 @@ int main() {
                     mainboard->points[BLACK] - mainboard->points[WHITE]);
       al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 640, 0, "Czas: %d:%d",
                     maintimer[1] / 60, maintimer[1] % 60);
-      render(textures, mainboard, &selected);
+      render(textures, mainboard, selected);
       break;
     case 10:
       switch (event.keyboard.keycode) {
+      case 9:
+        mainbot.getMove();
+        break;
       case 59:
         active = 0;
         break;
@@ -184,7 +235,7 @@ int main() {
         mainboard->clear();
         maintimer.setto(1200);
         mainboard->clearAllFlags();
-        selected.x = -1;
+        selected->x = -1;
 #endif
         break;
       default:
@@ -195,54 +246,12 @@ int main() {
       }
       break;
     case 20: // move
+
       break;
     case 21: // click
       x = (int)(event.mouse.x / TILE_SIZE);
       y = (int)(event.mouse.y / TILE_SIZE);
-      if (mainboard->flag(x, y) && mainboard->layout[x][y] &&
-          mainboard->layout[x][y]->color == mainboard->playing) {
-        if (mainboard->layout[x][y]->typ == KING)
-          mainboard->kinglogic(x, y);
-#ifdef DEBUG
-        mainboard->print();
-#endif
-        selected.moves.clear();
-        selected.x = x;
-        selected.y = y;
-        selected.used = mainboard->layout[x][y];
-        if (mainboard->szach[mainboard->playing] &&
-            selected.used->typ != KING) {
-          selected.moves =
-              (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
-               mainboard->flags[mainboard->layout[x][y]->color][ATTACK]) &
-              mainboard->kingFlagging(mainboard->playing);
-        } else
-          selected.moves =
-              (mainboard->flags[mainboard->layout[x][y]->color][MOVE] |
-               mainboard->flags[mainboard->layout[x][y]->color][ATTACK]);
-        mainboard->isPinned(x, y);
-        if (mainboard->layout[x][y]->pinned) {
-          selected.moves &= mainboard->isPinned(x, y);
-#ifdef DEBUG
-          printf("pinowany: %d\n", mainboard->isPinned(x, y).allValues());
-#endif
-        }
-      } else if (selected.moves.value(x, y)) {
-        mainboard->move(selected.x, selected.y, x, y);
-        al_flush_event_queue(queue);
-        if (selected.used->typ == KING) {
-          mainboard->kings[selected.used->color][0] = x;
-          mainboard->kings[selected.used->color][1] = y;
-        }
-        selected.x = -1;
-        selected.moves.clear();
-      } else {
-        selected.x = -1;
-        selected.moves.clear();
-      }
-#ifdef DEBUG
-      selected.moves.print();
-#endif
+      makeMove(selected, mainboard, x, y);
       break;
     case 42:
       active = 0;
