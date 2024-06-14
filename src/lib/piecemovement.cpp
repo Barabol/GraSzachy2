@@ -87,6 +87,7 @@ returnType board::move(const char px, const char py, const char x,
       !(this->flags[(~this->playing) & 1][MOVE] |
         this->flags[(~this->playing) & 1][ATTACK])
            .allValues()) {
+    this->szach[this->playing] = -1;
 #ifdef DEBUG
     (holder2 & holder).print("szach-mat");
     (this->flags[(~this->playing) & 1][MOVE] |

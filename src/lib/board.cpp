@@ -120,3 +120,9 @@ char piece::symbol() {
 }
 void piece::clearPin() { this->pinned = 0; }
 void piece::setPin() { this->pinned++; }
+void board::setBoardColor(bool tile, unsigned char r, unsigned char g,
+                          unsigned char b) {
+  this->colors[tile][0] = r;
+  this->colors[tile][1] = g;
+  this->colors[tile][2] = b;
+}

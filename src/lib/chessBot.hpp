@@ -3,7 +3,7 @@
 #ifndef __CHESS_BOT__
 #define __CHESS_BOT__
 typedef struct {
-  char x, y;
+  char x, y, boneBreaker;
 } moveLoc;
 class bot {
 public:
@@ -15,5 +15,14 @@ private:
   board *usedBoard;
   selection *selected;
   char (*makeMove)(selection *selected, board *mainboard, char x, char y);
+  char ostatniRatunek();
+  char kingMustMove();
+  char materialAnichilation();
+  char unguardedAttack();
+  void krazyMove();
+  char kindaSafeMove();
+  typedef struct {
+    char x, y, mx, my, rato;
+  } MoveListing;
 };
 #endif

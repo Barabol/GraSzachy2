@@ -121,8 +121,9 @@ get_gut: // każdy dobry program WYMAGA goto
   return holder;
 }
 void render(ALLEGRO_BITMAP *bitMap[3][6], board *brd, selection *selected) {
-  static const ALLEGRO_COLOR colors[2] = {al_map_rgb(255, 0, 0),
-                                          al_map_rgb(0, 255, 0)};
+  static const ALLEGRO_COLOR colors[2] = {
+      al_map_rgb(brd->colors[0][0], brd->colors[0][1], brd->colors[0][2]),
+      al_map_rgb(brd->colors[1][0], brd->colors[1][1], brd->colors[1][2])};
   for (int y = 0; y < 8; y++)
     for (int x = 0; x < 8; x++) {
       al_draw_filled_rectangle(
@@ -182,7 +183,8 @@ int main() {
 
   selection *selected = new selection;
   board *mainboard = new board;
-
+  mainboard->setBoardColor(0, 240, 217, 181);
+  mainboard->setBoardColor(1, 181, 136, 99);
   bot mainbot(mainboard, selected, makeMove);
   moveLoc botMovement;
 

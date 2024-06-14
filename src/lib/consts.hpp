@@ -8,7 +8,7 @@
 #define D_HEIGHT 720
 #define FRAMES 15
 #define TILE_SIZE 90
-#define RECURSION_LIMIT 130
+#define RECURSION_LIMIT 20
 
 typedef struct {
   Matrix moves;

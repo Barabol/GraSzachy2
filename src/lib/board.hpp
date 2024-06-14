@@ -49,6 +49,7 @@ public:
   char points[2];
   char kings[2][2];
   char szach[2];
+  unsigned char colors[2][3];
   board();
   ~board();
   void operator=(const board b);
@@ -64,6 +65,8 @@ public:
   void clearAllFlags();
   Matrix kingFlagging(const char color);
   Matrix isPinned(const char x, const char y);
+  void setBoardColor(bool tile, unsigned char r, unsigned char g,
+                     unsigned char b);
 
 private:
   struct {
