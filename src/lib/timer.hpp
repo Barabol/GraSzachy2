@@ -13,5 +13,6 @@ private:
   unsigned int times[2];
   bool *playing;
   char frameCounter;
+  char *szach;
 };
 #endif

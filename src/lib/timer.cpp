@@ -3,6 +3,7 @@
 Timer::Timer(board *brd, unsigned int time_) {
   this->playing = &(brd->playing);
   this->setto(time_);
+  this->szach = &(brd->szach[0]);
 }
 Timer::~Timer() {}
 unsigned int Timer::operator[](char a) {
@@ -12,6 +13,12 @@ unsigned int Timer::operator[](char a) {
     return this->times[1];
 }
 bool Timer::operator--() {
+
+  if (!this->times[0])
+    this->szach[0] = -1;
+  if (!this->times[1])
+    this->szach[1] = -1;
+
   if (frameCounter > 0) {
     frameCounter--;
     if (*this->playing) {

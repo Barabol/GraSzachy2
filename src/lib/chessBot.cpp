@@ -2,14 +2,13 @@
 #include "binaryMatrix.hpp"
 #include "board.hpp"
 #include "consts.hpp"
-#include <ctime>
 #include <random>
 #include <stdio.h>
 bot::bot(class board *usedBoard, selection *selected,
          char (*makeMove)(selection *, board *, char, char)) {
   this->usedBoard = usedBoard;
   this->makeMove = makeMove;
-  std::srand(time(nullptr));
+  std::srand(0x120);
 }
 void bot::getMove() {
   if (usedBoard->szach[usedBoard->playing] == -1) {
@@ -86,11 +85,17 @@ char bot::kingMustMove() {
   return 0;
 }
 void bot::krazyMove() {
+  if (usedBoard->szach[0] == -1 || usedBoard->szach[1] == -1)
+    return;
   static unsigned char recursionLimit = RECURSION_LIMIT;
   moveLoc holder;
   usedBoard->flagAll();
   holder.x = std::rand() & 7;
   holder.y = std::rand() & 7;
+  if (usedBoard->kings[usedBoard->playing][0] == holder.x &&
+      usedBoard->kings[usedBoard->playing][1] == holder.y &&
+      this->kingMustMove())
+    return;
 #ifdef DEBUG
   printf("bot: %d,%d\n", holder.x, holder.y);
 #endif
@@ -109,8 +114,12 @@ kochamGoto:
   holder.y = std::rand() & 7;
   if (!selected->moves.value(holder.x, holder.y))
     goto kochamGoto;
-  this->makeMove(selected, usedBoard, holder.x, holder.y);
-  recursionLimit = RECURSION_LIMIT;
+  if ((this->makeMove(selected, usedBoard, holder.x, holder.y))) {
+    recursionLimit = RECURSION_LIMIT;
+    return;
+  } else {
+    goto kochamGoto;
+  }
 }
 char bot::materialAnichilation() {
   usedBoard->flagAll();

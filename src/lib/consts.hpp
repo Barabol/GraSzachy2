@@ -4,17 +4,21 @@
 #include "binaryMatrix.hpp"
 #include "board.hpp"
 
-#define D_WIDTH 1280
-#define D_HEIGHT 720
-#define FRAMES 15
-#define TILE_SIZE 90
-#define RECURSION_LIMIT 20
-
 typedef struct {
   Matrix moves;
   char x, y;
   piece *used;
 } selection;
+// nie zmieniać!
+#define D_WIDTH 1280
+#define D_HEIGHT 720
+#define TILE_SIZE 90
+
+// można zmienić
+#define FRAMES 15          // 15 FPS-ów styka
+#define RECURSION_LIMIT 20 // rekurencja jest tylko w bocie szachowym
+#define DEFAULT_TIME 1200  // ile sekund ma być na timerze
+
 /*-----BUILD-FLAGS------*/
 
 // po prostu informacje debugowe
@@ -38,6 +42,9 @@ typedef struct {
 
 // po kliknięciu przycisku "i" bot dokonuje ruchu
 #define MANUAL_AI_MOVE
+
+// po odznaczeniu wyłancza muzyke
+// #define NO_MUSIC
 
 /*----------------------*/
 #endif

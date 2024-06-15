@@ -23,6 +23,8 @@
 #include <stdio.h>
 char makeMove(selection *selected, board *mainboard, char x, char y) {
   char retval = 0;
+  if (mainboard->szach[mainboard->playing] == -1)
+    return 0;
   if (mainboard->flag(x, y) && mainboard->layout[x][y] &&
       mainboard->layout[x][y]->color == mainboard->playing) {
     if (mainboard->layout[x][y]->typ == KING)
@@ -155,6 +157,7 @@ int main() {
   al_init_ttf_addon();
   al_install_audio();
   al_init_acodec_addon();
+  al_reserve_samples(6);
 
   ALLEGRO_DISPLAY *display = al_create_display(D_WIDTH, D_HEIGHT);
   ALLEGRO_FONT *font = al_load_font("./src/ttf/Sans.ttf", 30, 0);
@@ -177,7 +180,29 @@ int main() {
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_register_event_source(queue, al_get_display_event_source(display));
   al_register_event_source(queue, al_get_mouse_event_source());
+#ifndef NO_MUSIC
+  ALLEGRO_SAMPLE *tileSoundz = al_load_sample("./src/sfx/move.flac");
+  ALLEGRO_SAMPLE_INSTANCE *tileSound = al_create_sample_instance(tileSoundz);
 
+  ALLEGRO_SAMPLE *gameoverz = al_load_sample("./src/sfx/gameover.flac");
+  ALLEGRO_SAMPLE_INSTANCE *gameover = al_create_sample_instance(gameoverz);
+
+  ALLEGRO_SAMPLE *selectSoundz = al_load_sample("./src/sfx/click.flac");
+  ALLEGRO_SAMPLE_INSTANCE *selectSound =
+      al_create_sample_instance(selectSoundz);
+
+  ALLEGRO_SAMPLE *soundtrackz = al_load_sample("./src/sfx/soundtrack.flac");
+  ALLEGRO_SAMPLE_INSTANCE *soundtrack = al_create_sample_instance(soundtrackz);
+
+  al_attach_sample_instance_to_mixer(tileSound, al_get_default_mixer());
+  al_attach_sample_instance_to_mixer(gameover, al_get_default_mixer());
+  al_attach_sample_instance_to_mixer(selectSound, al_get_default_mixer());
+  al_attach_sample_instance_to_mixer(soundtrack, al_get_default_mixer());
+  al_set_sample_instance_playmode(soundtrack, ALLEGRO_PLAYMODE_LOOP);
+  al_play_sample_instance(soundtrack);
+
+  char muzyczka = 1;
+#endif
   bool active = 1;
   char x, y;
 
@@ -188,7 +213,7 @@ int main() {
   bot mainbot(mainboard, selected, makeMove);
   moveLoc botMovement;
 
-  Timer maintimer(mainboard, 1200);
+  Timer maintimer(mainboard, DEFAULT_TIME);
 #ifdef PROMOTION_CHOICE
   mainboard->setPfunction(promotion);
 #endif
@@ -200,8 +225,17 @@ int main() {
 
     switch (event.type) {
     case ALLEGRO_EVENT_TIMER:
+#ifndef NO_MUSIC
+      if (mainboard->szach[0] == -1 || mainboard->szach[1] == -1) {
+        if (muzyczka) {
+          al_play_sample_instance(gameover);
+          muzyczka = 0;
+          continue;
+        } else
+          al_stop_sample_instance(soundtrack);
+      }
+#endif
       al_clear_to_color(al_map_rgb(0, 0, 0));
-
       --maintimer;
 
       al_draw_textf(font, al_map_rgb(0, 255, 0), 800, 30, 0, "Czas: %d:%d",
@@ -217,7 +251,9 @@ int main() {
     case 10:
       switch (event.keyboard.keycode) {
       case 9:
+#ifdef MANUAL_AI_MOVE
         mainbot.getMove();
+#endif
         break;
       case 59:
         active = 0;
@@ -234,8 +270,12 @@ int main() {
         break;
       case 18:
 #ifdef RESTART_KEYBIND
+#ifndef NO_MUSIC
+        al_play_sample_instance(soundtrack);
+        muzyczka = 1;
+#endif
         mainboard->clear();
-        maintimer.setto(1200);
+        maintimer.setto(DEFAULT_TIME);
         mainboard->clearAllFlags();
         selected->x = -1;
 #endif
@@ -253,7 +293,16 @@ int main() {
     case 21: // click
       x = (int)(event.mouse.x / TILE_SIZE);
       y = (int)(event.mouse.y / TILE_SIZE);
+#ifndef NO_MUSIC
+      if (mainboard->layout[x][y] &&
+          mainboard->layout[x][y]->color == mainboard->playing)
+        al_play_sample_instance(selectSound);
+      if (makeMove(selected, mainboard, x, y))
+        al_play_sample_instance(tileSound);
+#endif
+#ifdef NO_MUSIC
       makeMove(selected, mainboard, x, y);
+#endif
       break;
     case 42:
       active = 0;
@@ -272,6 +321,7 @@ int main() {
   al_destroy_timer(timer);
   al_destroy_event_queue(queue);
   al_destroy_display(display);
+
   for (int x = 0; x < 6; x++)
     for (int y = 0; y < 3; y++)
       al_destroy_bitmap(textures[y][x]);
