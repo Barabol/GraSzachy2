@@ -13,7 +13,8 @@ unsigned int Timer::operator[](char a) {
     return this->times[1];
 }
 bool Timer::operator--() {
-
+  if (this->szach[0] == -1 || this->szach[1] == -1)
+    return false;
   if (!this->times[0])
     this->szach[0] = -1;
   if (!this->times[1])
