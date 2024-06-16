@@ -13,11 +13,17 @@ typedef struct {
 #define D_WIDTH 1280
 #define D_HEIGHT 720
 #define TILE_SIZE 90
+enum timeNames {
+  Rapid = 600,
+  Blitz = 180,
+  Bullet = 60,
+};
 
 // można zmienić
-#define FRAMES 15          // 15 FPS-ów styka
-#define RECURSION_LIMIT 20 // rekurencja jest tylko w bocie szachowym
-#define DEFAULT_TIME 1200  // ile sekund ma być na timerze
+#define FRAMES 15             // 15 FPS-ów styka
+#define RECURSION_LIMIT 20    // rekurencja jest tylko w bocie szachowym
+#define DEFAULT_TIME Rapid    // ile sekund ma być na timerze
+#define DEFAULT_BOARD_COLOR 1 // startowy index koloru planszy
 
 /*-----BUILD-FLAGS------*/
 
@@ -45,6 +51,9 @@ typedef struct {
 
 // po odznaczeniu wyłancza muzyke
 // #define NO_MUSIC
+
+// pozwala na zmiane koloru planszy po kliknięciu przycisku "c"
+#define BOARD_COLLOR_CHANGE
 
 /*----------------------*/
 #endif

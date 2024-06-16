@@ -71,6 +71,7 @@ char makeMove(selection *selected, board *mainboard, char x, char y) {
 #endif
   return retval;
 }
+
 char promotion(char color) {
   ALLEGRO_BITMAP *textures[2][6] = {
       {al_load_bitmap("./src/img/wp.png"), al_load_bitmap("./src/img/wn.png"),
@@ -123,7 +124,7 @@ get_gut: // każdy dobry program WYMAGA goto
   return holder;
 }
 void render(ALLEGRO_BITMAP *bitMap[3][6], board *brd, selection *selected) {
-  static const ALLEGRO_COLOR colors[2] = {
+  const ALLEGRO_COLOR colors[2] = {
       al_map_rgb(brd->colors[0][0], brd->colors[0][1], brd->colors[0][2]),
       al_map_rgb(brd->colors[1][0], brd->colors[1][1], brd->colors[1][2])};
   for (int y = 0; y < 8; y++)
@@ -208,10 +209,25 @@ int main() {
 
   selection *selected = new selection;
   board *mainboard = new board;
-  mainboard->setBoardColor(0, 240, 217, 181);
-  mainboard->setBoardColor(1, 181, 136, 99);
   bot mainbot(mainboard, selected, makeMove);
   moveLoc botMovement;
+
+  unsigned char kolory[][2][3] = {
+      {{238, 192, 173}, {189, 62, 50}},  {{235, 235, 208}, {119, 148, 85}},
+      {{240, 217, 181}, {75, 115, 153}}, {{216, 216, 216}, {120, 120, 120}},
+      {{119, 155, 184}, {77, 126, 167}}, {{255, 255, 255}, {252, 216, 221}},
+      {{240, 217, 181}, {181, 136, 99}}};
+  const unsigned char kolorkow = sizeof(kolory) / (sizeof(char) * 6);
+  unsigned char colorIndex = DEFAULT_BOARD_COLOR;
+  if (colorIndex >= kolorkow)
+    colorIndex = 0;
+#ifdef DEBUG
+  printf("kolorków planszy: %d\n", kolorkow);
+#endif
+  mainboard->setBoardColor(0, kolory[colorIndex][0][0],
+                           kolory[colorIndex][0][1], kolory[colorIndex][0][2]);
+  mainboard->setBoardColor(1, kolory[colorIndex][1][0],
+                           kolory[colorIndex][1][1], kolory[colorIndex][1][2]);
 
   Timer maintimer(mainboard, DEFAULT_TIME);
 #ifdef PROMOTION_CHOICE
@@ -250,6 +266,33 @@ int main() {
       break;
     case 10:
       switch (event.keyboard.keycode) {
+      case 3:
+#ifdef BOARD_COLLOR_CHANGE
+        colorIndex++;
+        if (colorIndex == kolorkow)
+          colorIndex = 0;
+        mainboard->setBoardColor(0, kolory[colorIndex][0][0],
+                                 kolory[colorIndex][0][1],
+                                 kolory[colorIndex][0][2]);
+        mainboard->setBoardColor(1, kolory[colorIndex][1][0],
+                                 kolory[colorIndex][1][1],
+                                 kolory[colorIndex][1][2]);
+#endif
+        break;
+      case 24:
+#ifdef BOARD_COLLOR_CHANGE
+        if (colorIndex == 0)
+          colorIndex = kolorkow;
+        colorIndex--;
+        mainboard->setBoardColor(0, kolory[colorIndex][0][0],
+                                 kolory[colorIndex][0][1],
+                                 kolory[colorIndex][0][2]);
+        mainboard->setBoardColor(1, kolory[colorIndex][1][0],
+                                 kolory[colorIndex][1][1],
+                                 kolory[colorIndex][1][2]);
+#endif
+        break;
+
       case 9:
 #ifdef MANUAL_AI_MOVE
         mainbot.getMove();
